@@ -4,6 +4,8 @@ from members.models import Member
 from courses.models import Course
 from attendance.models import AttendanceStatusEnum
 
+import os
+
 class DevicesStatusEnum(models.TextChoices):
     ACTIVE = "active"
     INACTIVE = "inactive"
@@ -22,11 +24,15 @@ class Device(models.Model):
     last_model_update = models.DateTimeField(blank=True, null=True)
 
 
-class TrainingImage(models.Model):
-    member = models.ForeignKey(Member, on_delete=models.CASCADE, related_name="training_images")
-    file_path = models.CharField(max_length=255)
-    uploaded_at = models.DateTimeField(auto_now_add=True)
+def training_image_upload_path(instance, filename):
+    return os.path.join(f"training_images/member_{instance.member.id}/", filename)
 
+class TrainingImage(models.Model):
+    member = models.ForeignKey(
+        Member, on_delete=models.CASCADE, related_name="training_images"
+    )
+    file_path = models.ImageField(upload_to=training_image_upload_path) 
+    uploaded_at = models.DateTimeField(auto_now_add=True)
 
 class FaceScanLog(models.Model):
     student = models.ForeignKey(Member, on_delete=models.CASCADE, related_name="face_scan_logs")
