@@ -9,6 +9,10 @@ import os
 
 app = FastAPI()
 
+@app.get("/")
+async def root():
+    return {"message": "Hello World"}
+
 @app.post("/train/")
 def train_model(course_id: str, user_ids: list, background_tasks: BackgroundTasks):
     background_tasks.add_task(run_training, course_id, user_ids)

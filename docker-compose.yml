@@ -29,6 +29,8 @@ services:
     volumes:
       - ./training_service:/training_service
       - ./media:/media
+    ports:
+      - "8001:8001"
     environment:
       - DATABASE_URL=postgres://admin:a@db:5432/db_face_scan
     depends_on:
