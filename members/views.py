@@ -1,7 +1,4 @@
-from rest_framework.viewsets import ModelViewSet
-from .models import Member
-from .serializers import MemberSerializer
+from django.shortcuts import render, HttpResponse
 
-class MemberViewSet(ModelViewSet):
-    queryset = Member.objects.all()
-    serializer_class = MemberSerializer
+def home(request):
+    return HttpResponse("Home")

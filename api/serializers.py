@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Member
+from members.models import Member
 from attendance.models import Attendance
 
 class MemberSerializer(serializers.ModelSerializer):
