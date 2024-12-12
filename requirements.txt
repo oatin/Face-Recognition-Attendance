@@ -5,3 +5,4 @@ djangorestframework
 python-dotenv
 pillow
 djangorestframework-simplejwt
+python-dotenv

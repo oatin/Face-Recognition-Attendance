@@ -1,4 +1,7 @@
-uvicorn
 fastapi
+uvicorn[standard]
+asyncpg
+sqlalchemy
+psycopg2-binary
 keras
-python-multipart
+opencv-python

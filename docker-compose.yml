@@ -9,7 +9,6 @@ services:
       - "8000:8000"
     depends_on:
       - db
-      - training_service
     environment:
       - DATABASE_URL=postgres://admin:a@db:5432/db_face_scan
 

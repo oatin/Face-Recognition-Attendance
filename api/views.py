@@ -3,8 +3,10 @@ from rest_framework.permissions import IsAuthenticated
 
 from members.models import Member
 from attendance.models import Attendance
+from courses.models import Course
+from devices.models import Device
 
-from .serializers import MemberSerializer, AttendanceSerializer
+from .serializers import MemberSerializer, AttendanceSerializer, CourseSerializer, DeviceSerializer
 
 class MemberViewSet(ModelViewSet):
     queryset = Member.objects.all()
@@ -14,4 +16,14 @@ class MemberViewSet(ModelViewSet):
 class AttendanceViewSet(ModelViewSet):
     queryset = Attendance.objects.all()
     serializer_class = AttendanceSerializer
+    permission_classes = [IsAuthenticated]
+
+class CourseViewSet(ModelViewSet):
+    queryset = Course.objects.all()
+    serializer_class = CourseSerializer
+    permission_classes = [IsAuthenticated]
+    
+class DeviceViewSet(ModelViewSet):
+    queryset = Device.objects.all()
+    serializer_class = DeviceSerializer
     permission_classes = [IsAuthenticated]
