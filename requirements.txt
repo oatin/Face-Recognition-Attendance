@@ -6,3 +6,6 @@ python-dotenv
 pillow
 djangorestframework-simplejwt
 python-dotenv
+django-allauth
+requests
+cryptography

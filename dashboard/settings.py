@@ -49,6 +49,13 @@ INSTALLED_APPS = [
     "api",
     "rest_framework",
     "rest_framework_simplejwt",
+
+    'django.contrib.sites', # New
+
+    'allauth', # New
+    'allauth.account', # New
+    'allauth.socialaccount', # New 
+    'allauth.socialaccount.providers.google', # New
 ]
 
 MIDDLEWARE = [
@@ -59,6 +66,8 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+
+    "allauth.account.middleware.AccountMiddleware",
 ]
 
 ROOT_URLCONF = "dashboard.urls"
@@ -86,11 +95,11 @@ WSGI_APPLICATION = "dashboard.wsgi.application"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
-    # "default": {
-    #     "ENGINE": "django.db.backends.sqlite3",
-    #     "NAME": BASE_DIR / "db.sqlite3",
-    # },
-    'default': dj_database_url.config(default=os.getenv('DATABASE_URL'))
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
+    },
+    # 'default': dj_database_url.config(default=os.getenv('DATABASE_URL'))
 }
 
 
@@ -153,3 +162,27 @@ REST_FRAMEWORK = {
     ),
     'PAGE_SIZE': 10
 }
+
+AUTH_USER_MODEL = 'members.Member'
+
+AUTHENTICATION_BACKENDS = (
+ 'django.contrib.auth.backends.ModelBackend',
+ 'allauth.account.auth_backends.AuthenticationBackend',
+)
+
+SITE_ID = 2
+LOGIN_REDIRECT_URL = '/'
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        }
+    }
+}
+
+SOCIALACCOUNT_LOGIN_ON_GET=True

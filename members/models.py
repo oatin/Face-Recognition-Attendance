@@ -1,3 +1,4 @@
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 class MembersRoleEnum(models.TextChoices):
@@ -11,7 +12,7 @@ class NotificationsStatusEnum(models.TextChoices):
     READ = "read"
 
 
-class Member(models.Model):
+class Member(AbstractUser):
     username = models.CharField(max_length=150, unique=True)
     email = models.EmailField(unique=True)
     role = models.CharField(
