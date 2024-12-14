@@ -10,7 +10,7 @@ services:
     depends_on:
       - db
     environment:
-      - DATABASE_URL=postgres://admin:a@db:5432/db_face_scan
+      - DATABASE_URL=postgres://admin:a@db:5432/db_face_scan_attendance
 
   db:
     image: postgres:15
@@ -21,19 +21,19 @@ services:
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: a
-      POSTGRES_DB: db_face_scan
+      POSTGRES_DB: db_face_scan_attendance
 
   training_service:
     build:
       context: ./training_service
       dockerfile: Dockerfile
     volumes:
+      - ./media:/training_service/media
       - ./training_service:/training_service
-      - ./media:/media
     ports:
       - "8001:8001"
     environment:
-      - DATABASE_URL=postgres://admin:a@db:5432/db_face_scan
+      - DATABASE_URL=postgres://admin:a@db:5432/db_face_scan_attendance
     depends_on:
       - db
 

@@ -41,7 +41,7 @@ async def train_course_model(course_id: int):
         os.makedirs(os.path.dirname(model_path), exist_ok=True)
         
         # Train the model
-        trained_model, history = model.train(X, y, model_path=model_path)
+        trained_model, history = model.train(X, y, model_path=f"{model_path}/test.keras")
         
         # Save model info to database
         data_loader.save_model_info(course_id, model_path, student_ids)
@@ -71,11 +71,12 @@ async def get_device_model(device_id: int):
         # Get pending model assignment
         cur.execute("""
             SELECT fm.model_path 
-            FROM face_model_assignment fma
-            JOIN face_model fm ON fma.model_id = fm.id
-            WHERE fma.device_id = %s AND fma.status = 'pending'
+            FROM public.devices_facemodelassignment fma
+            JOIN face_model fm 
+            ON fma.model_id = fm.id
+            WHERE fma.device_id = %s  -- This is a placeholder for the device_id parameter
             ORDER BY fm.created_at DESC
-            LIMIT 1
+            LIMIT 1;
         """, (device_id,))
         
         result = cur.fetchone()
@@ -89,9 +90,9 @@ async def get_device_model(device_id: int):
         
         # Update assignment status
         cur.execute("""
-            UPDATE face_model_assignment
-            SET status = 'downloaded', downloaded_at = CURRENT_TIMESTAMP
-            WHERE device_id = %s AND status = 'pending'
+            UPDATE public.devices_facemodelassignment
+            SET assigned_at = CURRENT_TIMESTAMP
+            WHERE device_id = %s
         """, (device_id,))
         
         conn.commit()
