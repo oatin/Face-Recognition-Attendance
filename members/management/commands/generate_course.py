@@ -4,12 +4,26 @@ from django.core.management.base import BaseCommand
 from members.models import Member, Student
 from courses.models import Course, Enrollment
 from attendance.models import Schedule, Attendance, AttendanceStatusEnum
+from common.models import Room  # Import Room model
 
 class Command(BaseCommand):
     help = "Generate seed data for Courses, Enrollments, Schedules, and Attendance"
 
     def handle(self, *args, **kwargs):
         self.stdout.write("Seeding data...")
+
+        # Create Rooms
+        rooms = []
+        for i in range(5):  # Create 5 rooms
+            room = Room.objects.create(
+                name=f"Room {i + 1}",
+                building=f"Building {random.choice(['A', 'B', 'C'])}",
+                floor=f"Floor {random.randint(1, 5)}",
+                capacity=random.randint(20, 40),
+            )
+            rooms.append(room)
+
+        self.stdout.write(f"Created {len(rooms)} rooms.")
 
         # Create Members (Teachers and Students)
         members = []
@@ -41,7 +55,6 @@ class Command(BaseCommand):
 
         self.stdout.write(f"Created {len(students)} students.")
 
-
         # Create Courses
         teachers = members[:5]  # First 5 members are teachers
         courses = []
@@ -72,12 +85,13 @@ class Command(BaseCommand):
         schedules = []
         for course in courses:
             for day in ["Monday", "Wednesday", "Friday"]:
+                room = random.choice(rooms)  # Randomly select a room from the created rooms
                 schedule = Schedule.objects.create(
                     course=course,
                     day_of_week=day,
                     start_time=time(9, 0),
                     end_time=time(10, 30),
-                    room=f"Room {random.randint(1, 10)}",
+                    room=room,  # Assign the selected room
                 )
                 schedules.append(schedule)
 

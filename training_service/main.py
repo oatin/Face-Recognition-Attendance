@@ -29,7 +29,7 @@ async def train_course_model(course_id: int):
     try:
         # Initialize data loader and load course data
         data_loader = DataLoader()
-        X, y, student_ids = data_loader.load_course_data(course_id)
+        X, y = data_loader.load_course_data(course_id)
         
         if len(X) == 0:
             logger.error(f"No valid training images found for course {course_id}")
@@ -41,10 +41,11 @@ async def train_course_model(course_id: int):
         os.makedirs(os.path.dirname(model_path), exist_ok=True)
         
         # Train the model
-        trained_model, history = model.train(X, y, model_path=f"{model_path}/test.keras")
+        trained_model, history = model.train(X, y, model_path=f"{model_path}/model.keras")
         
+        description = ""
         # Save model info to database
-        data_loader.save_model_info(course_id, model_path, student_ids)
+        data_loader.save_model_info(course_id , description, model_path)
         
         logger.info(f"Successfully trained model for course {course_id}")
         
@@ -53,11 +54,11 @@ async def train_course_model(course_id: int):
 
 @app.post("/train/{course_id}")
 async def trigger_training(course_id: int, background_tasks: BackgroundTasks):
-    if not is_training_time():
-        raise HTTPException(
-            status_code=403,
-            detail="Training is only allowed between 18:00 and 06:00"
-        )
+    # if not is_training_time():
+    #     raise HTTPException(
+    #         status_code=403,
+    #         detail="Training is only allowed between 18:00 and 06:00"
+    #     )
     
     background_tasks.add_task(train_course_model, course_id)
     return {"message": f"Training started for course {course_id}"}

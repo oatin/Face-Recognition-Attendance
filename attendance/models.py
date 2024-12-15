@@ -1,21 +1,8 @@
 from django.db import models
 from members.models import Member
 from courses.models import Course
-
-class AttendanceStatusEnum(models.TextChoices):
-    PRESENT = "present"
-    ABSENT = "absent"
-    LATE = "late"
-
-class SchedulesDayOfWeekEnum(models.TextChoices):
-    MONDAY = "Monday"
-    TUESDAY = "Tuesday"
-    WEDNESDAY = "Wednesday"
-    THURSDAY = "Thursday"
-    FRIDAY = "Friday"
-    SATURDAY = "Saturday"
-    SUNDAY = "Sunday"
-
+from common.models import Room
+from common.enums import AttendanceStatusEnum, SchedulesDayOfWeekEnum
 
 class Schedule(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="schedules")
@@ -24,11 +11,16 @@ class Schedule(models.Model):
     )
     start_time = models.TimeField()
     end_time = models.TimeField()
-    room = models.CharField(max_length=100)
+    room = models.ForeignKey(Room, on_delete=models.CASCADE, related_name="schedules")
 
+    class Meta:
+        db_table = 'attendance_schedule'
+
+    def __str__(self):
+        return f"{self.course} - {self.day_of_week} {self.start_time}-{self.end_time}"
 
 class Attendance(models.Model):
-    schedule = models.ForeignKey(Schedule, on_delete=models.CASCADE, related_name="attendances") 
+    schedule = models.ForeignKey(Schedule, on_delete=models.CASCADE, related_name="attendances")
     student = models.ForeignKey(Member, on_delete=models.CASCADE, related_name="attendances")
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="attendances")
     date = models.DateField()
@@ -36,3 +28,11 @@ class Attendance(models.Model):
         max_length=10, choices=AttendanceStatusEnum.choices
     )
     time = models.TimeField()
+    device = models.ForeignKey('devices.Device', on_delete=models.SET_NULL, null=True, related_name="recorded_attendances")
+
+    class Meta:
+        db_table = 'attendance_attendance'
+        indexes = [
+            models.Index(fields=['date', 'schedule']),
+            models.Index(fields=['student', 'course']),
+        ]

@@ -10,7 +10,7 @@ services:
     depends_on:
       - db
     environment:
-      - DATABASE_URL=postgres://admin:a@db:5432/db_face_scan_attendance
+      - DATABASE_URL=postgres://admin:a@db:5432/db_face_scan
 
   db:
     image: postgres:15
@@ -21,7 +21,7 @@ services:
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: a
-      POSTGRES_DB: db_face_scan_attendance
+      POSTGRES_DB: db_face_scan
 
   training_service:
     build:
@@ -33,7 +33,7 @@ services:
     ports:
       - "8001:8001"
     environment:
-      - DATABASE_URL=postgres://admin:a@db:5432/db_face_scan_attendance
+      - DATABASE_URL=postgres://admin:a@db:5432/db_face_scan
     depends_on:
       - db
 
