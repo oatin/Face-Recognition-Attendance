@@ -27,79 +27,75 @@ def is_training_time():
 
 async def train_course_model(course_id: int):
     try:
-        # Initialize data loader and load course data
-        data_loader = DataLoader()
-        X, y = data_loader.load_course_data(course_id)
-        
-        if len(X) == 0:
-            logger.error(f"No valid training images found for course {course_id}")
-            return
-            
-        # Initialize and train model
+        # Initialize and authenticate
+        loader = DataLoader(base_url="http://app:8000")
+        loader.authenticate("a", "a")
+
+        # Load course data
+        X, y = loader.load_course_data(course_id=course_id)
+
+        print(X,y)
         model = FaceRecognitionModel(num_classes=len(set(y)))
-        model_path = f"models/course_{course_id}_{datetime.now().strftime('%Y%m%d')}"
+        model_path = f"models/course_{course_id}_.keras"
         os.makedirs(os.path.dirname(model_path), exist_ok=True)
-        
+
         # Train the model
-        trained_model, history = model.train(X, y, model_path=f"{model_path}/model.keras")
+        trained_model, history = model.train(X, y, model_path=f"{model_path}")
         
-        description = ""
-        # Save model info to database
-        data_loader.save_model_info(course_id , description, model_path)
-        
+        # Save model info
+        success = loader.save_model_info(
+            course_id=course_id,
+            description="",
+            model_path=model_path
+        )
         logger.info(f"Successfully trained model for course {course_id}")
         
     except Exception as e:
         logger.error(f"Error training model for course {course_id}: {str(e)}")
+        raise  # Re-raise the exception for debugging if needed
 
 @app.post("/train/{course_id}")
 async def trigger_training(course_id: int, background_tasks: BackgroundTasks):
-    # if not is_training_time():
-    #     raise HTTPException(
-    #         status_code=403,
-    #         detail="Training is only allowed between 18:00 and 06:00"
-    #     )
+    if not is_training_time():
+        raise HTTPException(
+            status_code=403,
+            detail="Training is only allowed between 18:00 and 06:00"
+        )
     
     background_tasks.add_task(train_course_model, course_id)
     return {"message": f"Training started for course {course_id}"}
 
 @app.get("/model/download/{device_id}")
 async def get_device_model(device_id: int):
-    conn = DataLoader().get_connection()
-    cur = conn.cursor()
+    """
+    Get the latest model for a specific device.
+    """
+    downloader = DataLoader()
     
-    try:
-        # Get pending model assignment
-        cur.execute("""
-            SELECT fm.model_path 
-            FROM public.devices_facemodelassignment fma
-            JOIN face_model fm 
-            ON fma.model_id = fm.id
-            WHERE fma.device_id = %s  -- This is a placeholder for the device_id parameter
-            ORDER BY fm.created_at DESC
-            LIMIT 1;
-        """, (device_id,))
-        
-        result = cur.fetchone()
-        if not result:
-            raise HTTPException(
-                status_code=404,
-                detail="No pending model assignments"
-            )
-            
-        model_path = result[0]
-        
-        # Update assignment status
-        cur.execute("""
-            UPDATE public.devices_facemodelassignment
-            SET assigned_at = CURRENT_TIMESTAMP
-            WHERE device_id = %s
-        """, (device_id,))
-        
-        conn.commit()
-        
-        return FileResponse(model_path)
-        
-    finally:
-        cur.close()
-        conn.close()
+    # Authenticate - you might want to set these values from environment variables
+    if not downloader.authenticate("a", "a"):
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to authenticate with API"
+        )
+    
+    # Get latest model path
+    model_path = downloader.get_latest_model_path(device_id)
+    if not model_path:
+        raise HTTPException(
+            status_code=404,
+            detail="No pending model assignments"
+        )
+    
+    # Verify file exists
+    if not os.path.exists(model_path):
+        raise HTTPException(
+            status_code=404,
+            detail="Model file not found"
+        )
+    
+    # Update assignment status
+    if not downloader.update_assignment_status(device_id):
+        print(f"Warning: Failed to update assignment status for device {device_id}")
+    
+    return FileResponse(model_path)

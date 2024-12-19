@@ -35,7 +35,7 @@ class FaceRecognitionModel:
         
         return model
     
-    def train(self, X, y, batch_size=32, epochs=20, model_path='best_face_model.keras'):
+    def train(self, X, y, batch_size=32, epochs=10, model_path='best_face_model.keras'):
         model = self.build_model()
         
         # Callbacks

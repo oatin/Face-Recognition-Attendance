@@ -11,6 +11,7 @@ class FacePreprocessor:
         # Read image
         image = cv2.imread(image_path)
         if image is None:
+            print(f"Cannot read image")
             return None
             
         # Convert to grayscale

@@ -13,9 +13,6 @@ class Schedule(models.Model):
     end_time = models.TimeField()
     room = models.ForeignKey(Room, on_delete=models.CASCADE, related_name="schedules")
 
-    class Meta:
-        db_table = 'attendance_schedule'
-
     def __str__(self):
         return f"{self.course} - {self.day_of_week} {self.start_time}-{self.end_time}"
 
@@ -31,7 +28,6 @@ class Attendance(models.Model):
     device = models.ForeignKey('devices.Device', on_delete=models.SET_NULL, null=True, related_name="recorded_attendances")
 
     class Meta:
-        db_table = 'attendance_attendance'
         indexes = [
             models.Index(fields=['date', 'schedule']),
             models.Index(fields=['student', 'course']),

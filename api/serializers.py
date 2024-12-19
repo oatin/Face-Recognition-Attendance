@@ -1,8 +1,38 @@
 from rest_framework import serializers
-from members.models import Member
-from attendance.models import Attendance
-from courses.models import Course
-from devices.models import Device
+from members.models import Member, Student
+from attendance.models import Attendance, Schedule
+from courses.models import Course, Enrollment
+from devices.models import Device, FaceModel, FaceModelAssignment, TrainingImage
+
+class TrainingImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TrainingImage
+        fields = '__all__'
+
+class StudentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Student
+        fields = '__all__'
+
+class ScheduleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Schedule
+        fields = '__all__'
+
+class EnrollmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Enrollment
+        fields = '__all__'
+
+class FaceModelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FaceModel
+        fields = '__all__'
+
+class FaceModelAssignmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FaceModelAssignment
+        fields = '__all__'
 
 class MemberSerializer(serializers.ModelSerializer):
     class Meta:

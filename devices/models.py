@@ -19,9 +19,6 @@ class Device(models.Model):
     model_version = models.CharField(max_length=50, blank=True, null=True)
     last_model_update = models.DateTimeField(blank=True, null=True)
 
-    class Meta:
-        db_table = 'devices_device'
-
     def __str__(self):
         return f"{self.device_name} ({self.room})"
 
@@ -33,22 +30,16 @@ class TrainingImage(models.Model):
     file_path = models.ImageField(upload_to=training_image_upload_path)
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
-    class Meta:
-        db_table = 'devices_trainingimage'
-
     def __str__(self):
         return f"{self.file_path}"
 
 class FaceModel(models.Model):
-    course_id = models.ForeignKey(Course, on_delete=models.CASCADE)
-    model_version = models.IntegerField(unique=True)
+    course_id = models.ForeignKey(Course, on_delete=models.CASCADE , null=False)
+    model_version = models.IntegerField(unique=False)
     created_at = models.DateTimeField(auto_now_add=True)
     description = models.TextField(blank=True, null=True)
     model_path = models.CharField(max_length=255)
     updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        db_table = 'devices_facemodel'
 
     def __str__(self):
         return f"Model v{self.model_version}"
@@ -57,9 +48,6 @@ class FaceModelAssignment(models.Model):
     model = models.ForeignKey(FaceModel, on_delete=models.CASCADE, related_name="assignments")
     device = models.ForeignKey(Device, on_delete=models.CASCADE, related_name="model_assignments")
     assigned_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        db_table = 'devices_facemodelassignment'
 
 class FaceScanLog(models.Model):
     student = models.ForeignKey(Member, on_delete=models.CASCADE, related_name="face_scan_logs")
@@ -72,7 +60,6 @@ class FaceScanLog(models.Model):
     attendance = models.ForeignKey('attendance.Attendance', on_delete=models.SET_NULL, null=True, related_name="scan_logs")
 
     class Meta:
-        db_table = 'devices_facescanlog'
         indexes = [
             models.Index(fields=['scan_time']),
             models.Index(fields=['student', 'course']),

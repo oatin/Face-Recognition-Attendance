@@ -4,7 +4,7 @@ services:
       context: .
       dockerfile: Dockerfile
     volumes:
-      - ./media:/app/media  
+      - ./media:/media
     ports:
       - "8000:8000"
     depends_on:
@@ -28,7 +28,7 @@ services:
       context: ./training_service
       dockerfile: Dockerfile
     volumes:
-      - ./media:/training_service/media
+      - ./media:/media
       - ./training_service:/training_service
     ports:
       - "8001:8001"
@@ -36,6 +36,7 @@ services:
       - DATABASE_URL=postgres://admin:a@db:5432/db_face_scan
     depends_on:
       - db
+      - app
 
 volumes:
   db_data:
