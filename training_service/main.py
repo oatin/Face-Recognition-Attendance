@@ -34,7 +34,6 @@ async def train_course_model(course_id: int):
         # Load course data
         X, y = loader.load_course_data(course_id=course_id)
 
-        print(X,y)
         model = FaceRecognitionModel(num_classes=len(set(y)))
         model_path = f"models/course_{course_id}_.keras"
         os.makedirs(os.path.dirname(model_path), exist_ok=True)

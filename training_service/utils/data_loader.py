@@ -158,7 +158,6 @@ class DataLoader:
         self.label_map = label_map
         self.inverse_label_map = {v: k for k, v in label_map.items()}
 
-        print(X,y)
         return X, y
 
     def save_model_info(self, course_id: int, description: str, model_path: str) -> bool:
@@ -221,6 +220,7 @@ class DataLoader:
         
         for schedule in schedule_list:
             room_id = schedule.get('room')
+            print(room_id)
             if not room_id:
                 continue
 
