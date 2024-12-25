@@ -135,6 +135,7 @@ class DataLoader:
         for image_data in images_data:
             image_data['file_path'] = image_data['file_path'].replace('http://app:8000', '')
         
+        print(images_data)
         X = []
         y = []
 

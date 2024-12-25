@@ -13,6 +13,26 @@ class TrainingImageViewSet(ModelViewSet):
     serializer_class = TrainingImageSerializer
     permission_classes = [IsAuthenticated]
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+
+        allowed_params = {"course_id"}
+        query_params = set(self.request.query_params.keys())
+
+        invalid_params = query_params - allowed_params
+        if invalid_params:
+            raise print({param: "This parameter is not allowed." for param in invalid_params})
+
+        course_id = self.request.query_params.get('course_id')
+        if course_id:
+            if not course_id.isdigit():
+                raise print({"course_id": "Must be a valid integer."})
+            
+            member_course = Enrollment.objects.filter(course_id=course_id).values_list('student_id', flat=True)
+            queryset = queryset.filter(member_id__in=member_course)
+
+        return queryset
+
 class StudentViewSet(ModelViewSet):
     queryset = Student.objects.all()
     serializer_class = StudentSerializer
