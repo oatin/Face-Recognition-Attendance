@@ -1,0 +1,37 @@
+{
+    "version": 1,
+    "disable_existing_loggers": false,
+    "formatters": {
+        "standard": {
+            "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+        }
+    },
+    "handlers": {
+        "app_handler": {
+            "class": "logging.FileHandler",
+            "filename": "logs/app.log",
+            "formatter": "standard"
+        },
+        "attendance_handler": {
+            "class": "logging.FileHandler",
+            "filename": "logs/attendance.log",
+            "formatter": "standard"
+        },
+        "error_handler": {
+            "class": "logging.FileHandler",
+            "filename": "logs/error.log",
+            "formatter": "standard",
+            "level": "ERROR"
+        }
+    },
+    "loggers": {
+        "app": {
+            "handlers": ["app_handler", "error_handler"],
+            "level": "INFO"
+        },
+        "attendance": {
+            "handlers": ["attendance_handler", "error_handler"],
+            "level": "INFO"
+        }
+    }
+}
