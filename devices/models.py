@@ -34,7 +34,7 @@ class TrainingImage(models.Model):
         return f"{self.file_path}"
 
 class FaceModel(models.Model):
-    course_id = models.ForeignKey(Course, on_delete=models.CASCADE , null=False)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE , null=False)
     model_version = models.IntegerField(unique=False)
     created_at = models.DateTimeField(auto_now_add=True)
     description = models.TextField(blank=True, null=True)

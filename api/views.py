@@ -46,18 +46,26 @@ class ScheduleViewSet(ModelViewSet):
     def get_queryset(self):
         queryset = super().get_queryset()
 
-        allowed_params = {"course"}
+        allowed_params = {"device_id"}
         query_params = set(self.request.query_params.keys())
 
+        # ตรวจสอบพารามิเตอร์ที่ไม่อนุญาต
         invalid_params = query_params - allowed_params
         if invalid_params:
             raise print({param: "This parameter is not allowed." for param in invalid_params})
 
-        course_id = self.request.query_params.get('course')
-        if course_id:
-            if not course_id.isdigit():
-                raise print({"course": "Must be a valid integer."})
-            queryset = queryset.filter(course=int(course_id))
+        device_id = self.request.query_params.get('device_id')
+
+        if device_id:
+            if not device_id.isdigit():
+                raise print({"device_id": "Must be a valid integer."})
+
+            try:
+                device = Device.objects.get(id=device_id)
+                room_filter = device.room
+                queryset = queryset.filter(room=room_filter)
+            except Device.DoesNotExist:
+                raise print({"device_id": "Device with this ID does not exist."})
 
         return queryset
 
@@ -90,9 +98,38 @@ class FaceModelViewSet(ModelViewSet):
         return queryset
 
 class FaceModelAssignmentViewSet(ModelViewSet):
-    queryset = FaceModelAssignment.objects.all()
+    queryset = FaceModelAssignment.objects.all().order_by('id')
     serializer_class = FaceModelAssignmentSerializer
     permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+
+        allowed_params = {"device", "ordering"}
+        query_params = set(self.request.query_params.keys())
+
+        invalid_params = query_params - allowed_params
+        if invalid_params:
+            raise ValueError({param: "This parameter is not allowed." for param in invalid_params})
+
+        device_id = self.request.query_params.get('device')
+        if device_id:
+            if not device_id.isdigit():
+                raise ValueError({"device_id": "Must be a valid integer."})
+            queryset = queryset.filter(device_id=int(device_id))
+
+        ordering = self.request.query_params.get('ordering')
+        if ordering:
+            ordering_fields = ordering.split(',')
+            valid_ordering_fields = {
+                "id", "device_id", "model__created_at", "-id", "-device_id", "-model__created_at"
+            }
+            for field in ordering_fields:
+                if field not in valid_ordering_fields:
+                    raise ValueError({field: "This ordering field is not allowed."})
+            queryset = queryset.order_by(*ordering_fields)
+
+        return queryset
 
 class MemberViewSet(ModelViewSet):
     queryset = Member.objects.all()

@@ -63,38 +63,3 @@ async def trigger_training(course_id: int, background_tasks: BackgroundTasks):
     
     background_tasks.add_task(train_course_model, course_id)
     return {"message": f"Training started for course {course_id}"}
-
-@app.get("/model/download/{device_id}")
-async def get_device_model(device_id: int):
-    """
-    Get the latest model for a specific device.
-    """
-    downloader = DataLoader()
-    
-    # Authenticate - you might want to set these values from environment variables
-    if not downloader.authenticate("a", "a"):
-        raise HTTPException(
-            status_code=500,
-            detail="Failed to authenticate with API"
-        )
-    
-    # Get latest model path
-    model_path = downloader.get_latest_model_path(device_id)
-    if not model_path:
-        raise HTTPException(
-            status_code=404,
-            detail="No pending model assignments"
-        )
-    
-    # Verify file exists
-    if not os.path.exists(model_path):
-        raise HTTPException(
-            status_code=404,
-            detail="Model file not found"
-        )
-    
-    # Update assignment status
-    if not downloader.update_assignment_status(device_id):
-        print(f"Warning: Failed to update assignment status for device {device_id}")
-    
-    return FileResponse(model_path)

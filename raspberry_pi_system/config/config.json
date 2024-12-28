@@ -1,7 +1,0 @@
-{
-    "model": {
-        "input_shape": [224, 224, 3],
-        "confidence_threshold": 0.8,
-        "gpu_memory_limit": 0.7
-    }
-}
