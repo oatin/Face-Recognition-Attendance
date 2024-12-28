@@ -1,0 +1,80 @@
+import requests
+from typing import Dict, Optional, Any
+from dataclasses import dataclass
+
+@dataclass
+class APIEndpoints:
+    """Dataclass to store API endpoint configurations"""
+    enrollment: str
+    student: str
+    training_image: str
+    face_model: str
+    schedule: str
+    device: str
+
+    @classmethod
+    def from_base_url(cls, base_url: str) -> 'APIEndpoints':
+        base = base_url.rstrip('/')
+        return cls(
+            enrollment=f"{base}/api/Enrollment/",
+            student=f"{base}/api/Student/",
+            training_image=f"{base}/api/TrainingImageViewSet/",
+            face_model=f"{base}/api/FaceModel/",
+            schedule=f"{base}/api/Schedule/",
+            device=f"{base}/api/device/"
+        )
+
+class APIClient:
+    """Handles API communication and authentication"""
+    def __init__(self, base_url: str):
+        self.base_url = base_url.rstrip('/')
+        self.token: Optional[str] = None
+        self.endpoints = APIEndpoints.from_base_url(self.base_url)
+
+    def authenticate(self, username: str, password: str) -> bool:
+        """Authenticate with the API and get JWT token."""
+        try:
+            response = requests.post(
+                f"{self.base_url}/api/token/",
+                json={"username": username, "password": password},
+                timeout=10
+            )
+            response.raise_for_status()
+            self.token = response.json()["access"]
+            return True
+        except requests.exceptions.RequestException as e:
+            print(f"Authentication failed: {str(e)}")
+            return False
+
+    @property
+    def headers(self) -> Dict[str, str]:
+        """Get headers with JWT token."""
+        if not self.token:
+            raise ValueError("Not authenticated. Call authenticate() first.")
+        return {
+            "Authorization": f"Bearer {self.token}",
+            "Content-Type": "application/json"
+        }
+
+    def make_request(
+        self, 
+        url: str, 
+        method: str = 'get', 
+        **kwargs
+    ) -> Optional[Dict[str, Any]]:
+        """Make API request with error handling and retries."""
+        try:
+            response = requests.request(
+                method, 
+                url,
+                headers=self.headers,
+                timeout=10,
+                **kwargs
+            )
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            print(f"API request failed: {str(e)}")
+            if hasattr(response, 'text'):
+                print(f"Response text: {response.text}")
+            return None

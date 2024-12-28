@@ -44,11 +44,6 @@ class FaceModel(models.Model):
     def __str__(self):
         return f"Model v{self.model_version}"
 
-class FaceModelAssignment(models.Model):
-    model = models.ForeignKey(FaceModel, on_delete=models.CASCADE, related_name="assignments")
-    device = models.ForeignKey(Device, on_delete=models.CASCADE, related_name="model_assignments")
-    assigned_at = models.DateTimeField(auto_now_add=True)
-
 class FaceScanLog(models.Model):
     student = models.ForeignKey(Member, on_delete=models.CASCADE, related_name="face_scan_logs")
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="face_scan_logs")

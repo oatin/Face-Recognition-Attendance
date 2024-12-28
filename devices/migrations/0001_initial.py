@@ -66,37 +66,6 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.CreateModel(
-            name="FaceModelAssignment",
-            fields=[
-                (
-                    "id",
-                    models.BigAutoField(
-                        auto_created=True,
-                        primary_key=True,
-                        serialize=False,
-                        verbose_name="ID",
-                    ),
-                ),
-                ("assigned_at", models.DateTimeField(auto_now_add=True)),
-                (
-                    "device",
-                    models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE,
-                        related_name="assignments",
-                        to="devices.device",
-                    ),
-                ),
-                (
-                    "model",
-                    models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE,
-                        related_name="assignments",
-                        to="devices.facemodel",
-                    ),
-                ),
-            ],
-        ),
-        migrations.CreateModel(
             name="FaceScanLog",
             fields=[
                 (
