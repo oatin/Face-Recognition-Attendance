@@ -55,11 +55,11 @@ trainer = ModelTrainer()
 @app.post("/train/{course_id}")
 async def trigger_training(course_id: int, background_tasks: BackgroundTasks):
     """Endpoint to trigger model training"""
-    if not trainer.is_training_time():
-        raise HTTPException(
-            status_code=403,
-            detail="Training is only allowed between 18:00 and 06:00"
-        )
+    # if not trainer.is_training_time():
+    #     raise HTTPException(
+    #         status_code=403,
+    #         detail="Training is only allowed between 18:00 and 06:00"
+    #     )
     
     background_tasks.add_task(trainer.train_course_model, course_id)
     return {"message": f"Training started for course {course_id}"}

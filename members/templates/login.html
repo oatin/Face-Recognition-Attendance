@@ -1,16 +1,27 @@
 {% load socialaccount %}
-<html>
-  <head>
-    <title>Login page</title>
-  </head>
-  <body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
     {% if user.is_authenticated %}
-        <h1>Welcome, {{ user.username }} !</h1>       
+        <div class="bg-white shadow-md rounded-lg p-8 text-center">
+            <h1 class="text-2xl font-bold text-gray-800 mb-4">Welcome, {{ user.username }}!</h1>
+        </div>
     {% else %}
-        <h1>Login Page</h1>
-        <button onclick="document.location='{% provider_login_url 'google' %}'">
-            Login with Google
-        </button>
+        <div class="bg-white shadow-lg rounded-lg p-8 max-w-sm w-full">
+            <h1 class="text-3xl font-semibold text-gray-900 mb-6 text-center">Login</h1>
+            <button 
+                onclick="document.location='{% provider_login_url 'google' %}'" 
+                class="w-full bg-white text-black font-bold py-2 px-4 rounded-lg shadow-lg hover:bg-blue-600 transition duration-200 flex items-center justify-center space-x-2 outline outline-gray-300">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google Icon" class="w-5 h-5">
+                <span>Login with Google</span>
+            </button>
+        </div>
     {% endif %}
-  </body>
+</body>
 </html>

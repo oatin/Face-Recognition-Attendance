@@ -172,7 +172,8 @@ AUTHENTICATION_BACKENDS = (
 )
 
 SITE_ID = 2
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/members/'
+LOGOUT_REDIRECT_URL = '/members/login'
 
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
@@ -187,3 +188,7 @@ SOCIALACCOUNT_PROVIDERS = {
 }
 
 SOCIALACCOUNT_LOGIN_ON_GET=True
+LOGIN_URL = 'login'
+
+TEMP_DIR = os.path.join(MEDIA_ROOT, 'temp')
+os.makedirs(TEMP_DIR, exist_ok=True)

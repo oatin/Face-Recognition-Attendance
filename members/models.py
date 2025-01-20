@@ -20,7 +20,7 @@ class Member(AbstractUser):
     )
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
-    profile_path = models.ImageField(upload_to="profile_images/", null=True, blank=True)
+    profile_path = models.ImageField(upload_to="profile_images/", null=True, blank=True, default="profile_images/default.jpg")
 
     def __str__(self):
         return self.username
