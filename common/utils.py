@@ -35,11 +35,11 @@ def detect_face_pose(image_path):
     
     theta1, theta2 = calculate_angles(landmarks)
     
-    if -30 <= theta1 <= 30 and -30 <= theta2 <= 30:
+    if -10 <= theta1 <= 10 and -10 <= theta2 <= 10:
         return True, "Frontal Face"
-    elif theta1 < -30 and theta2 < -30:
+    elif theta1 < -10 and theta2 < -10:
         return True, "Left Profile"
-    elif theta1 > 30 and theta2 > 30:
+    elif theta1 > 10 and theta2 > 10:
         return True, "Right Profile"
     else:
         return False, "Invalid pose detected"

@@ -6,10 +6,16 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-50">
-    <nav class="fixed left-0 h-full w-20 bg-white shadow-lg flex flex-col items-center py-4 mx-5">
-        {% block menu %}
-        
-        {% endblock %}
+    <!-- Mobile menu button -->
+    <button id="mobile-menu-button" class="md:hidden fixed top-4 left-4 z-20 p-2 rounded-lg bg-white shadow-lg">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+        </svg>
+    </button>
+
+    <!-- Sidebar navigation -->
+    <nav class="fixed left-0 h-full w-20 bg-white shadow-lg flex flex-col items-center py-4 transform -translate-x-full md:translate-x-0 transition-transform duration-200 ease-in-out z-10" id="sidebar">
+        {% block menu %}{% endblock %}
         <a href="{% url 'logout'%}" class="p-3 rounded-lg hover:bg-purple-100 mt-auto">
             <svg class="w-6 h-6 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
@@ -18,13 +24,82 @@
             </svg>
         </a>
     </nav>
-    <div class="ml-20">
+
+    <!-- Main content -->
+    <div class="md:ml-20">
         {% include '_topbar.html' %}
-        <main class="p-8">
+        <main class="p-3 md:p-5">
             {% block content %}{% endblock %}
         </main>
     </div>
+
+    <!-- Modal -->
+    <div id="course-details-modal" class="hidden fixed z-30 inset-0 overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen px-4">
+            <div class="bg-white rounded-lg shadow-lg w-full max-w-md mx-auto">
+                <div class="p-4">
+                    <h3 class="modal-title text-xl font-semibold"></h3>
+                    <div class="modal-body mt-4"></div>
+                </div>
+                <div class="p-4 flex justify-end">
+                    <button class="modal-close-btn bg-gray-500 text-white px-4 py-2 rounded">Close</button>
+                    <button id="enroll-button" class="ml-4 bg-blue-500 text-white px-4 py-2 rounded">Enroll</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <script>
+        document.getElementById('search-input').addEventListener('input', async function() {
+            const query = this.value;
+            const resultsList = document.getElementById('search-results');
+
+            if (query.length > 0) {
+                try {
+                    const response = await fetch(`/courses/search/?term=${query}`);
+                    const data = await response.json();
+
+                    if (data.length > 0) {
+                        resultsList.classList.remove('hidden');
+                        resultsList.innerHTML = '';
+
+                        data.forEach(item => {
+                            const listItem = document.createElement('li');
+                            listItem.classList.add('px-4', 'py-2', 'hover:bg-gray-100');
+                            listItem.textContent = item.course_name;
+
+                            listItem.addEventListener('click', () => {
+                                if (confirm(`Enrollment for ${item.course_name}?`)) {
+                                    window.location.href = `/courses/course_detail/${item.id}/`;
+                                }
+                            });
+
+                            resultsList.appendChild(listItem);
+                        });
+                    } else {
+                        resultsList.classList.add('hidden');
+                    }
+                } catch (error) {
+                    console.error('Error fetching courses:', error);
+                }
+            } else {
+                resultsList.classList.add('hidden');
+            }
+        });
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                let cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    let cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
         {% block script %}
         {% endblock %}
     </script>

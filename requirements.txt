@@ -1,6 +1,6 @@
 Django
 dj-database-url
-psycopg2
+psycopg2-binary
 djangorestframework
 python-dotenv
 pillow
@@ -9,3 +9,6 @@ python-dotenv
 django-allauth
 requests
 cryptography
+opencv-python
+mtcnn
+tensorflow

@@ -3,6 +3,7 @@ from members.models import Member
 from courses.models import Course
 from common.models import Room
 from common.enums import AttendanceStatusEnum, SchedulesDayOfWeekEnum
+from devices.models import Device
 
 class Schedule(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="schedules")
@@ -25,7 +26,7 @@ class Attendance(models.Model):
         max_length=10, choices=AttendanceStatusEnum.choices
     )
     time = models.TimeField()
-    device = models.ForeignKey('devices.Device', on_delete=models.SET_NULL, null=True, related_name="recorded_attendances")
+    device = models.ForeignKey(Device, on_delete=models.SET_NULL, null=True, related_name="recorded_attendances")
 
     class Meta:
         indexes = [
