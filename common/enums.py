@@ -3,7 +3,7 @@ from django.db import models
 class AttendanceStatusEnum(models.TextChoices):
     PRESENT = "present"
     ABSENT = "absent"
-    LATE = "late"
+    Leave = "leave"
 
 class SchedulesDayOfWeekEnum(models.TextChoices):
     MONDAY = "Monday"

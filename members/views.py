@@ -1,18 +1,21 @@
 from django.shortcuts import render, redirect, HttpResponse
 from django.contrib.auth import logout 
 from django.contrib.auth.decorators import login_required
-
-from devices.models import TrainingImage
-from .forms import MultipleImageUploadForm
 from django.http import JsonResponse
-from common.utils import detect_face_pose
 from django.views.decorators.http import require_http_methods
-from django.core.files.storage import default_storage
 from django.conf import settings
 import os
 
 from .models import Member
+from attendance.models import Attendance, Schedule
+from courses.models import Course, Enrollment
+from devices.models import TrainingImage
 
+from common.utils import detect_face_pose
+from .forms import MultipleImageUploadForm
+
+from django.utils.timezone import now
+from datetime import timedelta
 @require_http_methods(["POST"])
 def validate_face_poses(request):
     response = {'valid': True, 'errors': [], 'poses_detected': []}
@@ -104,9 +107,73 @@ def save_training_images(request):
 @login_required
 def home(request):
     if request.user.role == "student":
-        return render(request, "student_home.html")
+        member = request.user
+
+        attendance_records = Attendance.objects.filter(student=member).order_by('date')
+
+        today = now().date()
+        day_of_week = today.strftime('%A')  
+
+        enrollments = Enrollment.objects.filter(student=member)
+
+        schedules = Schedule.objects.filter(
+            course__in=[enrollment.course for enrollment in enrollments],
+            day_of_week=day_of_week
+        )
+
+        schedules_calendar = Schedule.objects.filter(
+            course__in=[enrollment.course for enrollment in enrollments]
+        )
+
+        class_days = sorted(set([schedule.day_of_week for schedule in schedules_calendar])) 
+
+        cumulative_present = 0
+        cumulative_absent = 0
+        cumulative_leave = 0
+
+        attendance_data = {
+            'dates': [],
+            'present': [],
+            'absent': [],
+            'leave': []
+        }
+
+        for record in attendance_records:
+            attendance_data['dates'].append(record.date.strftime('%Y-%m-%d'))
+
+            if record.status == 'present':
+                cumulative_present += 1
+            elif record.status == 'absent':
+                cumulative_absent += 1
+            elif record.status == 'leave':
+                cumulative_leave += 1
+
+            attendance_data['present'].append(cumulative_present)
+            attendance_data['absent'].append(cumulative_absent)
+            attendance_data['leave'].append(cumulative_leave)
+
+        total_classes = attendance_records.count()
+        attendance_summary = {
+            'total': total_classes,
+            'present': cumulative_present,
+            'absence': cumulative_absent,
+            'leave': cumulative_leave
+        }
+
+        return render(
+            request,
+            "student_home.html",
+            {'attendance_data': attendance_data, 'attendance_summary': attendance_summary, 'class_days': class_days, "schedules": schedules, "today": today,},
+        )
+
+    elif request.user.role == "teacher":
+        return render(request, "teacher_home.html")
+
+    elif request.user.role == "admin":
+        return render(request, "admin_home.html")
+
     else:
-        return HttpResponse("test")
+        return HttpResponse("Unauthorized access")
 
 @login_required
 def profile(request):

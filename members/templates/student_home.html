@@ -15,7 +15,6 @@
 </div>
 {% endblock %}
 {% block content %}
-
 <div class="flex flex-col px-8 py-4 mx-5 bg-white shadow-sm">
     <div class="lg:flex mb-6">
         <p class="text-2xl font-semibold mb-2 lg:mb-0">Dashboard</p>
@@ -33,43 +32,217 @@
         </ol>
     </nav>
 
-    <div class="flex flex-wrap -mx-3 mb-20">
-        <div class="w-1/2 xl:w-1/4 px-3">
-          <div class="w-full bg-white border text-blue-400 flex items-center p-6 mb-6 xl:mb-0">
-            <svg class="w-16 h-16 fill-current mr-4 hidden lg:block" viewBox="0 0 20 20">
-              <path d="M17.35,2.219h-5.934c-0.115,0-0.225,0.045-0.307,0.128l-8.762,8.762c-0.171,0.168-0.171,0.443,0,0.611l5.933,5.934c0.167,0.171,0.443,0.169,0.612,0l8.762-8.763c0.083-0.083,0.128-0.192,0.128-0.307V2.651C17.781,2.414,17.587,2.219,17.35,2.219M16.916,8.405l-8.332,8.332l-5.321-5.321l8.333-8.332h5.32V8.405z M13.891,4.367c-0.957,0-1.729,0.772-1.729,1.729c0,0.957,0.771,1.729,1.729,1.729s1.729-0.772,1.729-1.729C15.619,5.14,14.848,4.367,13.891,4.367 M14.502,6.708c-0.326,0.326-0.896,0.326-1.223,0c-0.338-0.342-0.338-0.882,0-1.224c0.342-0.337,0.881-0.337,1.223,0C14.84,5.826,14.84,6.366,14.502,6.708"></path>
-            </svg>
-
-            <div class="text-gray-700">
-              <p class="font-semibold text-3xl">237</p>
-              <p>Products Sold</p>
+    <div class="flex flex-wrap flex-col md:flex-row md:mb-20">
+        <div class="flex-1 px-5">
+            <!-- Stats Grid -->
+            <div class="grid md:grid-cols-3 gap-4 mb-6">
+                <div class="bg-white rounded-lg p-6 shadow-sm">
+                    <div class="text-blue-600 text-lg font-medium mb-1">Attendance</div>
+                    <div class="text-gray-500 text-sm mb-4">This Month</div>
+                    <div class="text-4xl font-bold text-blue-600 mb-2">{{attendance_summary.total}}</div>
+                    <div class="text-gray-600">Total attendance</div>
+                </div>
+                <div class="bg-white rounded-lg p-6 shadow-sm">
+                    <div class="text-blue-600 text-lg font-medium mb-1">Present</div>
+                    <div class="text-gray-500 text-sm mb-4">This Month</div>
+                    <div class="text-4xl font-bold text-blue-600 mb-2">{{attendance_summary.present}}</div>
+                    <div class="text-gray-600">Course you present</div>
+                </div>
+                <div class="bg-white rounded-lg p-6 shadow-sm">
+                    <div class="text-blue-600 text-lg font-medium mb-1">Absent</div>
+                    <div class="text-gray-500 text-sm mb-4">This Month</div>
+                    <div class="text-4xl font-bold text-blue-600 mb-2">{{attendance_summary.absence}}</div>
+                    <div class="text-gray-600">Course you missed</div>
+                </div>
             </div>
-          </div>
-        </div>
-        <div class="w-1/2 xl:w-1/4 px-3">
-          <div class="w-full bg-white border text-blue-400 flex items-center p-6 mb-6 xl:mb-0">
-            <svg class="w-16 h-16 fill-current mr-4 hidden lg:block" viewBox="0 0 20 20">
-              <path d="M17.35,2.219h-5.934c-0.115,0-0.225,0.045-0.307,0.128l-8.762,8.762c-0.171,0.168-0.171,0.443,0,0.611l5.933,5.934c0.167,0.171,0.443,0.169,0.612,0l8.762-8.763c0.083-0.083,0.128-0.192,0.128-0.307V2.651C17.781,2.414,17.587,2.219,17.35,2.219M16.916,8.405l-8.332,8.332l-5.321-5.321l8.333-8.332h5.32V8.405z M13.891,4.367c-0.957,0-1.729,0.772-1.729,1.729c0,0.957,0.771,1.729,1.729,1.729s1.729-0.772,1.729-1.729C15.619,5.14,14.848,4.367,13.891,4.367 M14.502,6.708c-0.326,0.326-0.896,0.326-1.223,0c-0.338-0.342-0.338-0.882,0-1.224c0.342-0.337,0.881-0.337,1.223,0C14.84,5.826,14.84,6.366,14.502,6.708"></path>
-            </svg>
-
-            <div class="text-gray-700">
-              <p class="font-semibold text-3xl">237</p>
-              <p>Products Sold</p>
+    
+            <!-- Reports Section -->
+            <div class="bg-white rounded-lg p-6 shadow-sm mb-6">
+                <div class="flex justify-between items-center mb-6">
+                    <div class="text-blue-600 text-lg font-medium">Reports <span class="text-gray-500 text-sm">/Month</span></div>
+                </div>
+                <div class="h-64 w-full">
+                    <!-- Chart placeholder -->
+                    <div class="w-full h-full rounded flex items-center justify-center">
+                        <canvas id="attendanceChart"></canvas>
+                    </div>
+                </div>
             </div>
-          </div>
         </div>
-        <div class="w-1/2 xl:w-1/4 px-3">
-          <div class="w-full bg-white border text-blue-400 flex items-center p-6 mb-6 xl:mb-0">
-            <svg class="w-16 h-16 fill-current mr-4 hidden lg:block" viewBox="0 0 20 20">
-              <path d="M17.35,2.219h-5.934c-0.115,0-0.225,0.045-0.307,0.128l-8.762,8.762c-0.171,0.168-0.171,0.443,0,0.611l5.933,5.934c0.167,0.171,0.443,0.169,0.612,0l8.762-8.763c0.083-0.083,0.128-0.192,0.128-0.307V2.651C17.781,2.414,17.587,2.219,17.35,2.219M16.916,8.405l-8.332,8.332l-5.321-5.321l8.333-8.332h5.32V8.405z M13.891,4.367c-0.957,0-1.729,0.772-1.729,1.729c0,0.957,0.771,1.729,1.729,1.729s1.729-0.772,1.729-1.729C15.619,5.14,14.848,4.367,13.891,4.367 M14.502,6.708c-0.326,0.326-0.896,0.326-1.223,0c-0.338-0.342-0.338-0.882,0-1.224c0.342-0.337,0.881-0.337,1.223,0C14.84,5.826,14.84,6.366,14.502,6.708"></path>
-            </svg>
-
-            <div class="text-gray-700">
-              <p class="font-semibold text-3xl">237</p>
-              <p>Products Sold</p>
+    
+        <div class="flex-1 px-5">
+            <!-- Calendar Section -->
+            <div class="bg-white rounded-lg p-6 shadow-sm">
+                <div class="calendar-container">
+                    <!-- Header -->
+                    <div class="flex justify-between items-center mb-4">
+                      <button id="prevMonth" class="p-2 hover:bg-gray-100 rounded">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                        </svg>
+                      </button>
+                      <h2 id="currentMonth" class="text-lg font-semibold"></h2>
+                      <button id="nextMonth" class="p-2 hover:bg-gray-100 rounded">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                      </button>
+                    </div>
+                  
+                    <!-- Days of the Week -->
+                    <div class="grid grid-cols-7 gap-2 text-center text-sm text-gray-500">
+                      <div>Mon</div>
+                      <div>Tue</div>
+                      <div>Wed</div>
+                      <div>Thu</div>
+                      <div>Fri</div>
+                      <div>Sat</div>
+                      <div>Sun</div>
+                    </div>
+                  
+                    <!-- Calendar Grid -->
+                    <div id="calendarGrid" class="grid grid-cols-7 gap-2 mt-2">
+                      <!-- Dynamic dates will be inserted here -->
+                    </div>
+                  </div>
+    
+                <!-- Schedule Items -->
+                <div class="mt-4 space-y-3">
+                    {% for schedule in schedules %}
+                    <a href="{% url 'course_detail' schedule.course.id %}" class="text-sm font-medium">
+                        <div class="flex items-center justify-between p-2 hover:bg-gray-50 rounded">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                                <div>
+                                    <div class="text-sm font-medium">{{ schedule.course.course_name }}</div>
+                                    <div class="text-xs text-gray-500">
+                                        {{ schedule.start_time|date:"H:i" }} - {{ schedule.end_time|date:"H:i" }}
+                                    </div>
+                                    <div class="text-xs text-gray-400">{{ schedule.room.name }}</div>
+                                </div>
+                            </div>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                            </svg>
+                        </div>
+                    </a>
+                    {% endfor %}
+                </div>
             </div>
-          </div>
         </div>
-      </div>
+    </div>
 </div>
+{% endblock %}
+{% block script %}
+document.addEventListener("DOMContentLoaded", () => {
+    const currentMonth = document.getElementById("currentMonth");
+    const calendarGrid = document.getElementById("calendarGrid");
+    const prevMonthButton = document.getElementById("prevMonth");
+    const nextMonthButton = document.getElementById("nextMonth");
+
+    let today = new Date();
+    let currentYear = today.getFullYear();
+    let currentMonthIndex = today.getMonth();
+
+    const classDays = {{class_days|safe }}; 
+
+    function renderCalendar(year, month) {
+        const monthNames = [
+            "January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+        ];
+        const daysInMonth = new Date(year, month + 1, 0).getDate(); 
+        const firstDayIndex = new Date(year, month, 1).getDay(); 
+
+        currentMonth.textContent = `${monthNames[month]} ${year}`;
+        calendarGrid.innerHTML = ""; 
+        
+        const placeholders = (firstDayIndex + 6) % 7; 
+        
+        for (let i = 0; i < placeholders; i++) {
+            const emptyDiv = document.createElement("div");
+            calendarGrid.appendChild(emptyDiv);
+        }
+
+        const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+        // แสดงวันที่
+        for (let day = 1; day <= daysInMonth; day++) {
+            const date = new Date(year, month, day);
+            const dayName = dayNames[date.getDay()]; 
+
+            const dayDiv = document.createElement("div");
+            dayDiv.textContent = day;
+            dayDiv.className = "text-center text-sm py-2 rounded hover:bg-gray-200 cursor-pointer";
+
+            if (classDays.includes(dayName)) {
+                dayDiv.classList.add("bg-blue-200", "font-bold");
+            }
+
+            if (day === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
+                dayDiv.classList.add("bg-blue-200", "font-bold");
+            }
+
+            calendarGrid.appendChild(dayDiv);
+        }
+    }
+
+    prevMonthButton.addEventListener("click", () => {
+        currentMonthIndex--;
+        if (currentMonthIndex < 0) {
+            currentMonthIndex = 11;
+            currentYear--;
+        }
+        renderCalendar(currentYear, currentMonthIndex);
+    });
+
+    nextMonthButton.addEventListener("click", () => {
+        currentMonthIndex++;
+        if (currentMonthIndex > 11) {
+            currentMonthIndex = 0;
+            currentYear++;
+        }
+        renderCalendar(currentYear, currentMonthIndex);
+    });
+
+    renderCalendar(currentYear, currentMonthIndex);
+});
+
+const attendanceData = {{ attendance_data|safe }};
+
+const ctx = document.getElementById('attendanceChart').getContext('2d');
+new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: attendanceData.dates,
+        datasets: [
+            {
+                label: 'Present',
+                data: attendanceData.present,
+                borderColor: '#4154F1',
+                backgroundColor: '#7a87f5',
+            },
+            {
+                label: 'Absent',
+                data: attendanceData.absent,
+                borderColor: 'rgba(255, 99, 132, 1)',
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+            },
+            {
+                label: 'Leave',
+                data: attendanceData.leave,
+                borderColor: '#FF771D',
+                backgroundColor: '#ffad77',
+            },
+        ],
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'top',
+            },
+        },
+    },
+});
 {% endblock %}

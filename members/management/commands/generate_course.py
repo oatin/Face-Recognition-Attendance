@@ -62,6 +62,7 @@ class Command(BaseCommand):
             course = Course.objects.create(
                 course_code=f"COURSE_{i}",
                 course_name=f"Course {i}",
+                details="",
                 teacher=random.choice(teachers),
             )
             courses.append(course)

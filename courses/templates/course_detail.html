@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load schedule_tags %}
 {% block title %}Course{% endblock %}
 {% block menu %}
 <div class="flex flex-col flex-1 space-y-4">
@@ -16,28 +16,32 @@
 {% endblock %}
 {% block content %}
 <div class="flex flex-col px-8 py-4 mx-5 bg-white shadow-sm">
-    <div class="lg:flex mb-6">
-        <p class="text-2xl font-semibold mb-2 lg:mb-0">Courses</p>
-    </div>
+  <div class="lg:flex mb-6">
+      <p class="text-2xl font-semibold mb-2 lg:mb-0">Courses</p>
+  </div>
 
-    <nav class="text-sm font-semibold mb-6" aria-label="Breadcrumb">
-        <ol class="list-none p-0 inline-flex">
-          <li class="flex items-center text-blue-500">
-            <a href="{% url 'home' %}" class="text-gray-700">Home</a>
-            <svg class="fill-current w-3 h-3 mx-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M285.476 272.971L91.132 467.314c-9.373 9.373-24.569 9.373-33.941 0l-22.667-22.667c-9.357-9.357-9.375-24.522-.04-33.901L188.505 256 34.484 101.255c-9.335-9.379-9.317-24.544.04-33.901l22.667-22.667c9.373-9.373 24.569-9.373 33.941 0L285.475 239.03c9.373 9.372 9.373 24.568.001 33.941z"/></svg>
-          </li>
-          <li class="flex items-center text-blue-500">
-            <a href="{% url 'courses_home' %}" class="text-gray-700">Courses</a>
-            <svg class="fill-current w-3 h-3 mx-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M285.476 272.971L91.132 467.314c-9.373 9.373-24.569 9.373-33.941 0l-22.667-22.667c-9.357-9.357-9.375-24.522-.04-33.901L188.505 256 34.484 101.255c-9.335-9.379-9.317-24.544.04-33.901l22.667-22.667c9.373-9.373 24.569-9.373 33.941 0L285.475 239.03c9.373 9.372 9.373 24.568.001 33.941z"/></svg>
-          </li>
-          <li class="flex items-center">
-            <a href="{% url 'courses_home' %}" class="text-gray-600">{{course.course_name}} {{ course.course_code}}</a>
-          </li>
-        </ol>
-    </nav>
+  <nav class="text-sm font-semibold mb-6" aria-label="Breadcrumb">
+      <ol class="list-none p-0 inline-flex">
+        <li class="flex items-center text-blue-500">
+          <a href="{% url 'home' %}" class="text-gray-700">Home</a>
+          <svg class="fill-current w-3 h-3 mx-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+            <path d="M285.476 272.971L91.132 467.314c-9.373 9.373-24.569 9.373-33.941 0l-22.667-22.667c-9.357-9.357-9.375-24.522-.04-33.901L188.505 256 34.484 101.255c-9.335-9.379-9.317-24.544.04-33.901l22.667-22.667c9.373-9.373 24.569-9.373 33.941 0L285.475 239.03c9.373 9.372 9.373 24.568.001 33.941z"/>
+          </svg>
+        </li>
+        <li class="flex items-center text-blue-500">
+          <a href="{% url 'courses_home' %}" class="text-gray-700">Courses</a>
+          <svg class="fill-current w-3 h-3 mx-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+            <path d="M285.476 272.971L91.132 467.314c-9.373 9.373-24.569 9.373-33.941 0l-22.667-22.667c-9.357-9.357-9.375-24.522-.04-33.901L188.505 256 34.484 101.255c-9.335-9.379-9.317-24.544.04-33.901l22.667-22.667c9.373-9.373 24.569-9.373 33.941 0L285.475 239.03c9.373 9.372 9.373 24.568.001 33.941z"/>
+          </svg>
+        </li>
+        <li class="flex items-center">
+          <a href="{% url 'courses_home' %}" class="text-gray-600">{{ course.course_name }} {{ course.course_code }}</a>
+        </li>
+      </ol>
+  </nav>
 
-    <div class="max-w-screen space-y-6">
-      {% if enroll %}
+  <div class="max-w-screen space-y-6">
+    {% if enroll %}
       <!-- Filters - Full width -->
       <div class="w-full bg-white p-4 rounded-lg shadow-md">
         <div class="flex gap-5">
@@ -57,98 +61,145 @@
           </div>
         </div>
       </div>
-    
+
       <!-- Summary Cards and Pie Chart in one row -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <!-- Summary Cards -->
         <div class="lg:col-span-2 grid grid-cols-2 md:grid-cols-3 gap-4">
           <div class="bg-white p-4 rounded-lg shadow-md text-center">
-              <h3 class="text-xl font-semibold">Attendance</h3>
-              <p class="text-2xl mt-2">{{ attendance_data.total }}/25</p>
+            <h3 class="text-xl font-semibold">Attendance</h3>
+            <p class="text-2xl mt-2">{{ attendance_data.total }}</p>
           </div>
           <div class="bg-white p-4 rounded-lg shadow-md text-center">
-              <h3 class="text-xl font-semibold">Present</h3>
-              <p class="text-2xl mt-2">{{ attendance_data.present }}</p>
+            <h3 class="text-xl font-semibold">Present</h3>
+            <p class="text-2xl mt-2">{{ attendance_data.present }}</p>
           </div>
           <div class="bg-white p-4 rounded-lg shadow-md text-center">
-              <h3 class="text-xl font-semibold">Absence</h3>
-              <p class="text-2xl mt-2">{{ attendance_data.absence }}</p>
+            <h3 class="text-xl font-semibold">Absence</h3>
+            <p class="text-2xl mt-2">{{ attendance_data.absence }}</p>
           </div>
           <div class="bg-white p-4 rounded-lg shadow-md text-center">
-              <h3 class="text-xl font-semibold">Leave</h3>
-              <p class="text-2xl mt-2">{{ attendance_data.leave }}</p>
+            <h3 class="text-xl font-semibold">Leave</h3>
+            <p class="text-2xl mt-2">{{ attendance_data.leave }}</p>
           </div>
           <div class="bg-white p-4 rounded-lg shadow-md text-center">
-              <h3 class="text-xl font-semibold">Present Rate</h3>
-              <p class="text-2xl mt-2">{{ attendance_data.present_percentage }}</p>
+            <h3 class="text-xl font-semibold">Present Rate</h3>
+            <p class="text-2xl mt-2">{{ attendance_data.present_percentage }}</p>
           </div>
           <div class="bg-white p-4 rounded-lg shadow-md text-center">
-              <h3 class="text-xl font-semibold">Increased</h3>
-              <p class="text-2xl mt-2">{{ attendance_data.increased }}</p>
+            <h3 class="text-xl font-semibold">Absence Rate</h3>
+            <p class="text-2xl mt-2">{{ attendance_data.absence_percentage }}</p>
           </div>
         </div>
-    
+
         <!-- Pie Chart -->
         <div class="bg-white p-6 rounded-lg shadow-md">
           <h3 class="text-xl font-semibold mb-4">Activity</h3>
-          <div class="flex justify-center">
-            <div class="w-full h-40 bg-gray-200 rounded-full"></div>
+          <div class="flex justify-center items-center">
+            <div class="w-full justify-center items-center">
+              <canvas id="attendanceChart"></canvas>
+            </div>
           </div>
         </div>
       </div>
-    
-      <!-- Study Schedule - Full width -->
+
       <div class="w-full bg-white p-6 rounded-lg shadow-md">
-        <h3 class="text-xl font-semibold mb-4">Study Schedule</h3>
-        <div class="space-y-2">
-          <div class="flex items-center space-x-2">
-            <div class="w-16 text-gray-500">MON</div>
-            <div class="flex-1 bg-blue-500 h-4 rounded"></div>
-          </div>
-          <div class="flex items-center space-x-2">
-            <div class="w-16 text-gray-500">TUE</div>
-            <div class="flex-1 bg-blue-500 h-4 rounded"></div>
-          </div>
+        <h3 class="text-xl font-semibold mb-4">Class Schedule</h3>
+        <div class="grid grid-cols-12 gap-2 text-center">
+          <div class="col-span-1"></div>
+
+          {% for hour in "8,9,10,11,12,13,14,15,16,17,18"|split:"," %}
+            <div class="col-span-1">{{hour}}:00</div>
+          {% endfor %}
+
+          {% with days="Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday"|split:"," %}
+            {% for day in days %}
+              <div class="col-span-1 text-gray-500 flex items-center justify-center h-full">
+                {{day|slice:":3"|upper}}
+              </div>
+              <div class="col-span-11 grid grid-cols-11 gap-1">
+                {% for schedule in schedules %}
+                  {% if schedule.day_of_week == day %}
+                    {% with start_hour=schedule.start_time|date:"H"|add:"-8" %}
+                      {% with duration=schedule.end_time|date:"H"|add:"-8"|subtract:start_hour %}
+                        <div class="bg-blue-500 col-span-{{duration}} col-start-{{start_hour|add:'1'}} h-16 rounded flex items-center justify-center text-white text-xs">
+                          {{schedule.room}}
+                        </div>
+                      {% endwith %}
+                    {% endwith %}
+                  {% endif %}
+                {% endfor %}
+              </div>
+            {% endfor %}
+          {% endwith %}
         </div>
       </div>
-    </div>
+
     {% else %}
-    <div class="w-full bg-white p-6 rounded-lg shadow-md">
-      <div class="flex items-center space-x-4">
-        {% if course.image %}
-        <img src="{{ course.image.url }}" alt="{{ course.course_name }}" class="w-32 h-32 object-cover rounded-lg shadow-md">
-        {% else %}
-        <div class="w-32 h-32 bg-gray-200 rounded-lg shadow-md flex items-center justify-center text-gray-500">
-          No Image
-        </div>
-        {% endif %}
-        <div>
-          <h2 class="text-2xl font-semibold">{{ course.course_name }}</h2>
-          <p class="text-gray-500">Course Code: {{ course.course_code }}</p>
-          <p class="text-gray-500">Created at: {{ course.create_at }}</p>
-          {% if course.teacher %}
-          <p class="text-gray-500">Teacher: {{ course.teacher }}</p>
+      <div class="w-full bg-white p-6 rounded-lg shadow-md">
+        <div class="flex items-center space-x-4">
+          {% if course.image %}
+            <img src="{{ course.image.url }}" alt="{{ course.course_name }}" class="w-32 h-32 object-cover rounded-lg shadow-md">
           {% else %}
-          <p class="text-gray-500">Teacher: Not Assigned</p>
+            <div class="w-32 h-32 bg-gray-200 rounded-lg shadow-md flex items-center justify-center text-gray-500">
+              No Image
+            </div>
           {% endif %}
+          <div>
+            <h2 class="text-2xl font-semibold">{{ course.course_name }}</h2>
+            <p class="text-gray-500">Course Code: {{ course.course_code }}</p>
+            <p class="text-gray-500">Created at: {{ course.create_at }}</p>
+            {% if course.teacher %}
+              <p class="text-gray-500">Teacher: {{ course.teacher }}</p>
+            {% else %}
+              <p class="text-gray-500">Teacher: Not Assigned</p>
+            {% endif %}
+          </div>
+        </div>
+        <div class="mt-6">
+          <h3 class="text-xl font-semibold">Course Details</h3>
+          <p class="text-gray-700 mt-2">{{ course.details }}</p>
         </div>
       </div>
-      <div class="mt-6">
-        <h3 class="text-xl font-semibold">Course Details</h3>
-        <p class="text-gray-700 mt-2">{{ course.details }}</p>
+
+      <div class="w-full bg-gray-100 p-6 rounded-lg shadow-md text-center">
+        <h3 class="text-lg font-semibold text-gray-700">Want to join this course?</h3>
+        <a href="{% url 'enroll_course' course.id %}" 
+           class="mt-4 inline-block bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md">
+          Enroll Now
+        </a>
       </div>
-    </div>
-    
-    <div class="w-full bg-gray-100 p-6 rounded-lg shadow-md text-center">
-      <h3 class="text-lg font-semibold text-gray-700">Want to join this course?</h3>
-      <a href="{% url 'enroll_course' course.id %}" 
-        class="mt-4 inline-block bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md">
-        Enroll Now
-      </a>
-    </div>
-  </div>
     {% endif %}
+  </div>
 </div>
 {% endblock %}
 {% block script %}
+const attendanceData = {{ attendance_data|safe }};
+  
+const data = {
+    labels: ['Present', 'Absent', 'Leave'],
+    datasets: [{
+        label: 'Attendance',
+        data: [attendanceData.present, attendanceData.absence, attendanceData.leave],
+        backgroundColor: ['#344BFD', '#F68D2B', '#F4A79D'], 
+        hoverOffset: 4
+    }]
+};
+
+const ctx = document.getElementById('attendanceChart').getContext('2d');
+const attendanceChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: data,
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+          legend: {
+              fullSize: true,
+              align: 'center',
+              position: 'left', 
+          }
+      }
+  }
+});
 {% endblock %}

@@ -32,7 +32,7 @@
         </ol>
     </nav>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-20">
+    <div class="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-4 mb-20">
         {% for e in courses %}
             <a href="{% url 'course_detail' e.id %}" class="block">
                 <div class="relative flex flex-col bg-white shadow-sm border border-slate-200 rounded-lg">
