@@ -11,11 +11,11 @@ from attendance.models import Attendance, Schedule
 from courses.models import Course, Enrollment
 from devices.models import TrainingImage
 
-from common.utils import detect_face_pose
-from .forms import MultipleImageUploadForm
+from common.utils import predFacePose
 
 from django.utils.timezone import now
 from datetime import timedelta
+
 @require_http_methods(["POST"])
 def validate_face_poses(request):
     response = {'valid': True, 'errors': [], 'poses_detected': []}
@@ -46,7 +46,7 @@ def validate_face_poses(request):
             temp_files.append(temp_path)
             
             try:
-                is_valid, detected_pose = detect_face_pose(temp_path)
+                is_valid, detected_pose = predFacePose(temp_path)
                 
                 if is_valid:
                     pose_counts[detected_pose] += 1

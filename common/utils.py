@@ -1,45 +1,51 @@
-import cv2
+from facenet_pytorch import MTCNN
+from PIL import Image
 import numpy as np
-from mtcnn import MTCNN
-import math
 import os
 
-def calculate_angles(landmarks):
-    right_eye = landmarks['right_eye']
-    left_eye = landmarks['left_eye']
-    nose = landmarks['nose']
-    
-    theta1 = math.degrees(math.atan2(right_eye[1] - nose[1], right_eye[0] - nose[0]))
-    theta2 = math.degrees(math.atan2(left_eye[1] - nose[1], left_eye[0] - nose[0]))
-    
-    return theta1, theta2
+mtcnn = MTCNN(
+    image_size=224,
+    min_face_size=20,
+    thresholds=[0.6, 0.7, 0.7],
+    factor=0.8,
+    device='cpu' 
+)
 
-def detect_face_pose(image_path):
+def np_angle(a, b, c):
+    ba = np.array(a) - np.array(b)
+    bc = np.array(c) - np.array(b)
+    cosine_angle = np.dot(ba, bc) / (np.linalg.norm(ba) * np.linalg.norm(bc))
+    angle = np.arccos(cosine_angle)
+    return np.degrees(angle)
+
+def predFacePose(image_path):
     if not os.path.exists(image_path):
-        raise FileNotFoundError(f"Image file not found: {image_path}")
+        return False, "File does not exist"
+    
+    try:
+        im = Image.open(image_path)
+        if im.mode != "RGB": 
+            im = im.convert('RGB')
+
+        bbox, probs, landmarks_list = mtcnn.detect(im, landmarks=True)
+
+        if landmarks_list is None or probs is None:
+            return False, "No face detected in the image"
+
+        for landmarks, prob in zip(landmarks_list, probs):
+            if prob > 0.9: 
+                angR = np_angle(landmarks[0], landmarks[1], landmarks[2])  
+                angL = np_angle(landmarks[1], landmarks[0], landmarks[2])  
+
+                if 35 <= int(angR) <= 56 and 35 <= int(angL) <= 57:
+                    return True, "Frontal Face"
+                elif angR < angL:
+                    return True, "Right Profile"
+                else:
+                    return True, "Left Profile"
+            else:
+                return False, f"Invalid pose detected: Low detection probability ({prob:.2f})"
         
-    image = cv2.imread(image_path)
-    if image is None:
-        raise ValueError(f"Failed to load image: {image_path}")
-    
-    detector = MTCNN()
-    
-    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-    
-    faces = detector.detect_faces(image)
-    
-    if not faces:
-        return False, "No face detected"
-    
-    landmarks = faces[0]['keypoints']
-    
-    theta1, theta2 = calculate_angles(landmarks)
-    
-    if -10 <= theta1 <= 10 and -10 <= theta2 <= 10:
-        return True, "Frontal Face"
-    elif theta1 < -10 and theta2 < -10:
-        return True, "Left Profile"
-    elif theta1 > 10 and theta2 > 10:
-        return True, "Right Profile"
-    else:
-        return False, "Invalid pose detected"
+        return False, "No valid face pose detected"
+    except Exception as e:
+        return False, f"Error processing image: {str(e)}"
