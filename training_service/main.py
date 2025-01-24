@@ -7,15 +7,14 @@ from utils.data_loader import DataLoader
 from utils.model import FaceRecognitionModel
 import logging
 from typing import Tuple
+import json
 
 class ModelTrainer:
-    """Handles model training operations"""
     def __init__(self):
         self.logger = logging.getLogger(__name__)
         
     @staticmethod
     def is_training_time() -> bool:
-        """Check if current time is within training window"""
         TRAINING_START = time(18, 0)  # 18:00
         TRAINING_END = time(6, 0)     # 06:00
         
@@ -25,22 +24,27 @@ class ModelTrainer:
         return current_time >= TRAINING_START or current_time <= TRAINING_END
 
     async def train_course_model(self, course_id: int) -> None:
-        """Train model for a specific course"""
         try:
             loader = DataLoader(base_url="http://app:8000")
             loader.authenticate("a", "a")
 
-            X, y = loader.load_course_data(course_id=course_id)
+            X, y, inverse_label_map = loader.load_course_data(course_id=course_id)
             model = FaceRecognitionModel(num_classes=len(set(y)))
             model_path = f"models/course_{course_id}_.keras"
+            label_map = f"models/label_map_{course_id}.json"
             os.makedirs(os.path.dirname(model_path), exist_ok=True)
 
             trained_model, history = model.train(X, y, model_path=model_path)
             success = loader.save_model_info(
                 course_id=course_id,
                 description="",
-                model_path=model_path
+                model_path=model_path,
+                inverse_label_map=label_map
             )
+            
+            with open(label_map, 'w') as f:
+                json.dump(inverse_label_map, f)
+
             self.logger.info(f"Successfully trained model for course {course_id}")
             
         except Exception as e:
@@ -54,7 +58,6 @@ trainer = ModelTrainer()
 
 @app.post("/train/{course_id}")
 async def trigger_training(course_id: int, background_tasks: BackgroundTasks):
-    """Endpoint to trigger model training"""
     # if not trainer.is_training_time():
     #     raise HTTPException(
     #         status_code=403,
@@ -66,7 +69,6 @@ async def trigger_training(course_id: int, background_tasks: BackgroundTasks):
 
 @app.get("/download/{course_id}")
 async def download_model(course_id: int):
-    """Endpoint to download trained model"""
     try:
         loader = DataLoader(base_url="http://app:8000")
         loader.authenticate("a", "a")
@@ -99,6 +101,45 @@ async def download_model(course_id: int):
             filename=os.path.basename(model_path),
             media_type="application/octet-stream"
         )
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        return JSONResponse(
+            status_code=500,
+            content={"detail": f"Internal server error: {str(e)}"}
+        )
+    
+@app.get("/download_label_map/{course_id}")
+async def download_label_map(course_id: int):
+    try:
+        loader = DataLoader(base_url="http://app:8000")
+        loader.authenticate("a", "a")
+
+        response = loader.api_client.make_request(
+            loader.api_client.endpoints.face_model,
+            params={'course_id': course_id}
+        )
+
+        if not response or "results" not in response or not response["results"]:
+            raise HTTPException(
+                status_code=404,
+                detail=f"No label map found for course_id {course_id}."
+            )
+
+        model_data = response["results"][0]
+        inverse_label_map_path = model_data.get("inverse_label_map")
+
+        if not inverse_label_map_path or not os.path.exists(inverse_label_map_path):
+            raise HTTPException(
+                status_code=404,
+                detail=f"Inverse label map file '{inverse_label_map_path}' does not exist."
+            )
+
+        with open(inverse_label_map_path, "r") as f:
+            inverse_label_map = json.load(f)
+
+        return JSONResponse(content=inverse_label_map)
 
     except HTTPException:
         raise

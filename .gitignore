@@ -8,6 +8,7 @@ media
 
 dataset/
 training_service/models/
+training_service/preprocess_image/
 
 # Backup files # 
 *.bak 

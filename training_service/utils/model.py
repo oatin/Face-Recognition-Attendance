@@ -35,7 +35,7 @@ class FaceRecognitionModel:
         
         return model
     
-    def train(self, X, y, batch_size=32, epochs=10, model_path='best_face_model.keras'):
+    def train(self, X, y, batch_size=16, epochs=10, model_path='best_face_model.keras'):
         model = self.build_model()
         
         # Callbacks
@@ -57,7 +57,7 @@ class FaceRecognitionModel:
             X, y,
             batch_size=batch_size,
             epochs=epochs,
-            validation_split=0.1,
+            validation_split=0.2,
             callbacks=[checkpoint, early_stopping]
         )
         

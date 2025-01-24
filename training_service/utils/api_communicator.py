@@ -4,7 +4,6 @@ from dataclasses import dataclass
 
 @dataclass
 class APIEndpoints:
-    """Dataclass to store API endpoint configurations"""
     enrollment: str
     student: str
     training_image: str
@@ -25,14 +24,12 @@ class APIEndpoints:
         )
 
 class APIClient:
-    """Handles API communication and authentication"""
     def __init__(self, base_url: str):
         self.base_url = base_url.rstrip('/')
         self.token: Optional[str] = None
         self.endpoints = APIEndpoints.from_base_url(self.base_url)
 
     def authenticate(self, username: str, password: str) -> bool:
-        """Authenticate with the API and get JWT token."""
         try:
             response = requests.post(
                 f"{self.base_url}/api/token/",
@@ -48,7 +45,6 @@ class APIClient:
 
     @property
     def headers(self) -> Dict[str, str]:
-        """Get headers with JWT token."""
         if not self.token:
             raise ValueError("Not authenticated. Call authenticate() first.")
         return {
@@ -62,7 +58,6 @@ class APIClient:
         method: str = 'get', 
         **kwargs
     ) -> Optional[Dict[str, Any]]:
-        """Make API request with error handling and retries."""
         try:
             response = requests.request(
                 method, 

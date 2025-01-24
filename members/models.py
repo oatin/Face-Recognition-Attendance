@@ -37,7 +37,7 @@ class Notification(models.Model):
 
 class Student(models.Model):
     member = models.OneToOneField(Member, on_delete=models.CASCADE, related_name="student_profile")
-    student_id = models.PositiveIntegerField(unique=True)
+    student_id = models.CharField(max_length=10,unique=True)
 
     def __str__(self):
         return f"Student ID: {self.student_id}"

@@ -39,6 +39,7 @@ class FaceModel(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     description = models.TextField(blank=True, null=True)
     model_path = models.CharField(max_length=255)
+    inverse_label_map = models.CharField(max_length=255)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):

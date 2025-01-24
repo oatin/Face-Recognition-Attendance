@@ -11,4 +11,4 @@ requests
 cryptography
 opencv-python
 mtcnn
-tensorflow
+facenet_pytorch

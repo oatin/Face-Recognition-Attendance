@@ -7,12 +7,11 @@ from .preprocess import FacePreprocessor
 from .api_communicator import APIClient
 
 class DataLoader:
-    """Handles loading and processing of training data"""
     def __init__(
         self,
         base_url: str = "http://app:8000",
         landmark_path: str = "utils/shape_predictor_68_face_landmarks.dat",
-        max_workers: int = 4
+        max_workers: int = 1
     ):
         self.api_client = APIClient(base_url)
         self.preprocessor = FacePreprocessor(landmark_path=landmark_path)
@@ -21,12 +20,10 @@ class DataLoader:
         self.inverse_label_map: Dict[int, int] = {}
 
     def authenticate(self, username: str, password: str) -> bool:
-        """Proxy method to authenticate API client"""
         return self.api_client.authenticate(username, password)
 
     @lru_cache(maxsize=100)
     def _get_student_info(self, student_id: int) -> Optional[dict]:
-        """Get student information with caching."""
         return self.api_client.make_request(
             f"{self.api_client.endpoints.student}{student_id}/"
         )
@@ -35,7 +32,6 @@ class DataLoader:
         self, 
         image_data: dict
     ) -> Tuple[Optional[np.ndarray], Optional[int]]:
-        """Process a single training image."""
         try:
             image_path = image_data.get('file_path')
             student_id = image_data.get('member')
@@ -53,7 +49,6 @@ class DataLoader:
             return None, None
 
     def load_course_data(self, course_id: int) -> Tuple[np.ndarray, np.ndarray]:
-        """Load and preprocess course data efficiently using parallel processing."""
         if not self.api_client.token:
             raise ValueError("Not authenticated. Call authenticate() first.")
 
@@ -97,15 +92,15 @@ class DataLoader:
         self.inverse_label_map = {v: k for k, v in self.label_map.items()}
         y = np.array([self.label_map[label] for label in y])
 
-        return X, y
+        return X, y, self.inverse_label_map
 
     def save_model_info(
         self, 
         course_id: int, 
         description: str, 
-        model_path: str
+        model_path: str,
+        inverse_label_map: str
     ) -> bool:
-        """Save or update face model information."""
         if not self.api_client.token:
             raise ValueError("Not authenticated. Call authenticate() first.")
 
@@ -118,7 +113,8 @@ class DataLoader:
             model_data = {
                 "course": course_id,
                 "description": description,
-                "model_path": model_path
+                "model_path": model_path,
+                "inverse_label_map": inverse_label_map
             }
 
             if existing_models and existing_models.get('results', []):
