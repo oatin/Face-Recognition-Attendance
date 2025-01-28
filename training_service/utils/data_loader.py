@@ -58,7 +58,7 @@ class DataLoader:
         )
 
         if not training_data:
-            return np.array([]), np.array([])
+            return np.array([]), np.array([]), np.array([])
 
         images_data = (
             training_data if isinstance(training_data, list) 
@@ -83,7 +83,7 @@ class DataLoader:
                     y.append(student_id)
 
         if not X:
-            return np.array([]), np.array([])
+            return np.array([]), np.array([]), np.array([])
 
         # Prepare and encode data
         X = np.array(X)

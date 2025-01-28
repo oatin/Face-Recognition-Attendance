@@ -57,7 +57,7 @@ class FaceRecognitionModel:
             X, y,
             batch_size=batch_size,
             epochs=epochs,
-            validation_split=0.2,
+            validation_split=0.1,
             callbacks=[checkpoint, early_stopping]
         )
         

@@ -12,7 +12,7 @@ from courses.models import Course, Enrollment
 from devices.models import TrainingImage
 
 from common.utils import predFacePose
-
+from .forms import TrainingImageForm
 from django.utils.timezone import now
 from datetime import timedelta
 
@@ -163,11 +163,72 @@ def home(request):
         return render(
             request,
             "student_home.html",
-            {'attendance_data': attendance_data, 'attendance_summary': attendance_summary, 'class_days': class_days, "schedules": schedules, "today": today,},
+            {'attendance_data': attendance_data, 'attendance_summary': attendance_summary, 'class_days': class_days, "schedules": schedules},
         )
 
     elif request.user.role == "teacher":
-        return render(request, "teacher_home.html")
+        teacher = request.user
+
+        today = now().date()
+        day_of_week = today.strftime('%A')  
+
+        courses_taught = Course.objects.filter(teacher=teacher)
+        schedules = Schedule.objects.filter(
+            course__in=courses_taught,
+            day_of_week=day_of_week
+        )
+
+        schedules_calendar = Schedule.objects.filter(
+            course__in=courses_taught
+        )
+
+        class_days = sorted(set([schedule.day_of_week for schedule in schedules_calendar]))
+
+        attendance_data = {
+            'dates': [],
+            'present': [],
+            'absent': [],
+            'leave': []
+        }
+
+        attendance_records = Attendance.objects.filter(course__in=courses_taught).order_by('date')
+
+        cumulative_present = 0
+        cumulative_absent = 0
+        cumulative_leave = 0
+
+        for record in attendance_records:
+            if record.date.strftime('%Y-%m-%d') not in attendance_data['dates']:
+                attendance_data['dates'].append(record.date.strftime('%Y-%m-%d'))
+
+            if record.status == 'present':
+                cumulative_present += 1
+            elif record.status == 'absent':
+                cumulative_absent += 1
+            elif record.status == 'leave':
+                cumulative_leave += 1
+
+            attendance_data['present'].append(cumulative_present)
+            attendance_data['absent'].append(cumulative_absent)
+            attendance_data['leave'].append(cumulative_leave)
+
+        attendance_summary = {
+            'total': 0,
+            'present': 0,
+            'absence': 0,
+            'leave': 0
+        }
+        for course in courses_taught:
+            attendance_records = Attendance.objects.filter(course=course)
+
+            attendance_summary['present'] = attendance_records.filter(status='present').count()
+            attendance_summary['absence'] = attendance_records.filter(status='absent').count()
+            attendance_summary['leave'] = attendance_records.filter(status='leave').count()
+
+            attendance_summary['total'] = attendance_summary['present'] + attendance_summary['leave'] + attendance_summary['absence']
+            
+        print(attendance_data)
+        return render(request, "teacher_home.html",{'attendance_summary':attendance_summary, 'class_days': class_days, "schedules": schedules,'attendance_data':attendance_data})
 
     elif request.user.role == "admin":
         return render(request, "admin_home.html")
