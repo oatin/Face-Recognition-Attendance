@@ -7,6 +7,7 @@ from django.db.models import Count, Case, When, Value, IntegerField, Q, F
 from .models import Course, Enrollment
 from attendance.models import Attendance, Schedule
 from members.models import Member
+from common.models import Room
 
 from datetime import datetime, timedelta, date
 
@@ -33,48 +34,80 @@ def search_view(request):
 
 @login_required
 def course_detail(request, course_id):
-    course = get_object_or_404(Course, id=course_id)
-    member = request.user
-    
-    schedules = Schedule.objects.filter(course=course).select_related('room')
-    
-    attendance_data = {
-        'total': 0,
-        'present': 0,
-        'absence': 0,
-        'leave': 0,
-        'present_percentage': "0.0%",
-        'absence_percentage': "0.0%",
-    }
+    if request.user.role == "student":
+        course = get_object_or_404(Course, id=course_id)
+        member = request.user
+        
+        schedules = Schedule.objects.filter(course=course).select_related('room')
+        
+        attendance_data = {
+            'total': 0,
+            'present': 0,
+            'absence': 0,
+            'leave': 0,
+            'present_percentage': "0.0%",
+            'absence_percentage': "0.0%",
+        }
 
-    if Enrollment.objects.filter(student=member, course=course).exists():
-        total_classes = Attendance.objects.filter(course=course, student=member).count()
-        present_count = Attendance.objects.filter(course=course, student=member, status='present').count()
-        absence_count = Attendance.objects.filter(course=course, student=member, status='absent').count()
-        leave_count = Attendance.objects.filter(course=course, student=member, status='leave').count()
+        if Enrollment.objects.filter(student=member, course=course).exists():
+            total_classes = Attendance.objects.filter(course=course, student=member).count()
+            present_count = Attendance.objects.filter(course=course, student=member, status='present').count()
+            absence_count = Attendance.objects.filter(course=course, student=member, status='absent').count()
+            leave_count = Attendance.objects.filter(course=course, student=member, status='leave').count()
 
-        attendance_data.update({
-            'total': total_classes,
-            'present': present_count,
-            'absence': absence_count,
-            'leave': leave_count,
-            'present_percentage': f"{(present_count / total_classes) * 100:.1f}%" if total_classes > 0 else "0.0%",
-            'absence_percentage': f"{(absence_count / total_classes) * 100:.1f}%" if total_classes > 0 else "0.0%"
-        })
+            attendance_data.update({
+                'total': total_classes,
+                'present': present_count,
+                'absence': absence_count,
+                'leave': leave_count,
+                'present_percentage': f"{(present_count / total_classes) * 100:.1f}%" if total_classes > 0 else "0.0%",
+                'absence_percentage': f"{(absence_count / total_classes) * 100:.1f}%" if total_classes > 0 else "0.0%"
+            })
+
+            return render(request, 'course_detail.html', {
+                'course': course,
+                'attendance_data': attendance_data,
+                'schedules': schedules,
+                'enroll': True
+            })
 
         return render(request, 'course_detail.html', {
             'course': course,
             'attendance_data': attendance_data,
             'schedules': schedules,
-            'enroll': True
+            'enroll': False
         })
+    elif request.user.role == "teacher":
+        courses = Course.objects.filter(teacher=request.user)
+        return render(request, 'course_teacher.html', {'courses': courses})
 
-    return render(request, 'course_detail.html', {
-        'course': course,
-        'attendance_data': attendance_data,
-        'schedules': schedules,
-        'enroll': False
-    })
+def create_course_view(request):
+    if request.method == 'POST':
+        if request.user.role == "teacher" or request.user.role == "admin":
+            course_code = request.POST.get('course_code')
+            course_name = request.POST.get('course_name')
+            details = request.POST.get('details')
+            image = request.FILES.get('image')
+            day_of_week = request.POST.getlist('day_of_week')  # รับค่าจากฟอร์ม
+            start_time = request.POST.get('start_time')
+            end_time = request.POST.get('end_time')
+            room_id = request.POST.get('room')
+            
+            room = Room.objects.get(id=room_id)
+            
+            course = Course.objects.create(
+                teacher=request.user,
+                course_code=course_code, course_name=course_name,
+                details=details, image=image
+            )
+            
+            for day in day_of_week:
+                Schedule.objects.create(
+                    course=course, day_of_week=day,
+                    start_time=start_time, end_time=end_time, room=room
+                )
+            
+            return redirect('courses_home')
 
 @login_required
 def courses_home(request):
@@ -82,5 +115,10 @@ def courses_home(request):
         enrollments = Enrollment.objects.filter(student=request.user)  
         courses = [enrollment.course for enrollment in enrollments] 
         return render(request, 'courses.html', {'courses': courses})
+    elif request.user.role == "teacher":
+        courses = Course.objects.filter(teacher=request.user)
+        rooms = Room.objects.all()
+        days_of_week = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+        return render(request, 'courses.html', {'courses': courses,'days_of_week': days_of_week, 'rooms': rooms})
     else:
-        return HttpResponse("test")
+        return redirect("home")

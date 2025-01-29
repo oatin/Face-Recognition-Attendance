@@ -21,6 +21,7 @@ class Member(AbstractUser):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     profile_path = models.ImageField(upload_to="profile_images/", null=True, blank=True, default="profile_images/default.jpg")
+    student_id = models.CharField(max_length=15, unique=True, null=True, blank=True)
 
     def __str__(self):
         return self.username
@@ -34,10 +35,3 @@ class Notification(models.Model):
         max_length=10, choices=NotificationsStatusEnum.choices, default=NotificationsStatusEnum.UNREAD
     )
     created_at = models.DateTimeField(auto_now_add=True)
-
-class Student(models.Model):
-    member = models.OneToOneField(Member, on_delete=models.CASCADE, related_name="student_profile")
-    student_id = models.CharField(max_length=10,unique=True)
-
-    def __str__(self):
-        return f"Student ID: {self.student_id}"

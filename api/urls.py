@@ -10,7 +10,6 @@ router.register(r"attendance", AttendanceViewSet)
 router.register(r"courses", CourseViewSet)
 router.register(r"device", DeviceViewSet)
 
-router.register(r"Student", StudentViewSet)
 router.register(r"Schedule", ScheduleViewSet)
 router.register(r"Enrollment", EnrollmentViewSet)
 router.register(r"FaceModel", FaceModelViewSet)

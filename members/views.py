@@ -227,7 +227,6 @@ def home(request):
 
             attendance_summary['total'] = attendance_summary['present'] + attendance_summary['leave'] + attendance_summary['absence']
             
-        print(attendance_data)
         return render(request, "teacher_home.html",{'attendance_summary':attendance_summary, 'class_days': class_days, "schedules": schedules,'attendance_data':attendance_data})
 
     elif request.user.role == "admin":
@@ -245,6 +244,27 @@ def profile(request):
             request.user.save()
             return redirect('profile')  
     return render(request, "profile.html")
+
+@login_required
+def teacher_student(request):  
+    teacher = request.user
+    courses = Course.objects.filter(teacher=teacher)
+    attendances = Attendance.objects.filter(course__in=courses).select_related('student', 'course')
+    
+    months = [(str(m).zfill(2), month) for m, month in enumerate(
+        ['January', 'February', 'March', 'April', 'May', 'June',
+         'July', 'August', 'September', 'October', 'November', 'December'], 1)]
+    years = list(range(2020, 2101))
+    
+    context = {
+        'teacher': teacher,
+        'courses': courses,
+        'attendances': attendances,
+        'months': months,
+        'years': years,
+    }
+    
+    return render(request, "teacher_student.html", context)
     
 def user_login(request):
     return render(request, "login.html")

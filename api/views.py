@@ -2,7 +2,7 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import ValidationError
 
-from members.models import Member, Student
+from members.models import Member#, Student
 from attendance.models import Attendance, Schedule
 from courses.models import Course, Enrollment
 from devices.models import Device, FaceModel , TrainingImage
@@ -34,11 +34,6 @@ class TrainingImageViewSet(ModelViewSet):
             queryset = queryset.filter(member_id__in=member_course)
 
         return queryset
-
-class StudentViewSet(ModelViewSet):
-    queryset = Student.objects.all()
-    serializer_class = StudentSerializer
-    permission_classes = [IsAuthenticated]
 
 class ScheduleViewSet(ModelViewSet):
     queryset = Schedule.objects.all().order_by('day_of_week')
