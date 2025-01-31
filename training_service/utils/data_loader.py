@@ -25,7 +25,7 @@ class DataLoader:
     @lru_cache(maxsize=100)
     def _get_student_info(self, student_id: int) -> Optional[dict]:
         return self.api_client.make_request(
-            f"{self.api_client.endpoints.student}{student_id}/"
+            f"{self.api_client.endpoints.member}{student_id}/"
         )
 
     def _process_image(

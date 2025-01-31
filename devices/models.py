@@ -4,6 +4,7 @@ from members.models import Member
 from courses.models import Course
 from common.models import Room
 from common.enums import DevicesStatusEnum, AttendanceStatusEnum
+from django.conf import settings
 
 class Device(models.Model):
     device_name = models.CharField(max_length=255)
@@ -23,7 +24,13 @@ class Device(models.Model):
         return f"{self.device_name} ({self.room})"
 
 def training_image_upload_path(instance, filename):
-    return os.path.join(f"training_images/member_{instance.member.id}/", filename)
+    folder_path = f"training_images/member_{instance.member.id}/"
+    
+    full_path = os.path.join(settings.MEDIA_ROOT, folder_path)
+    if not os.path.exists(full_path):
+        os.makedirs(full_path)
+    
+    return os.path.join(folder_path, filename)
 
 class TrainingImage(models.Model):
     member = models.ForeignKey(Member, on_delete=models.CASCADE, related_name="training_images")

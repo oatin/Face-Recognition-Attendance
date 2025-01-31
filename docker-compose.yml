@@ -22,6 +22,8 @@ services:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: a
       POSTGRES_DB: db_face_scan
+      LANG: en_US.UTF-8
+      LC_ALL: en_US.UTF-8
 
   training_service:
     build:

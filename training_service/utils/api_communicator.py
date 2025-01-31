@@ -5,7 +5,7 @@ from dataclasses import dataclass
 @dataclass
 class APIEndpoints:
     enrollment: str
-    student: str
+    member: str
     training_image: str
     face_model: str
     schedule: str
@@ -16,7 +16,7 @@ class APIEndpoints:
         base = base_url.rstrip('/')
         return cls(
             enrollment=f"{base}/api/Enrollment/",
-            student=f"{base}/api/Student/",
+            member=f"{base}/api/members/",
             training_image=f"{base}/api/TrainingImageViewSet/",
             face_model=f"{base}/api/FaceModel/",
             schedule=f"{base}/api/Schedule/",
