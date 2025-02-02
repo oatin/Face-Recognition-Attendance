@@ -6,13 +6,13 @@ class AttendanceStatusEnum(models.TextChoices):
     Leave = "leave"
 
 class SchedulesDayOfWeekEnum(models.TextChoices):
-    MONDAY = "Monday"
-    TUESDAY = "Tuesday"
-    WEDNESDAY = "Wednesday"
-    THURSDAY = "Thursday"
-    FRIDAY = "Friday"
-    SATURDAY = "Saturday"
-    SUNDAY = "Sunday"
+    MONDAY = "monday", "Monday"
+    TUESDAY = "tuesday", "Tuesday"
+    WEDNESDAY = "wednesday", "Wednesday"
+    THURSDAY = "thursday", "Thursday"
+    FRIDAY = "friday", "Friday"
+    SATURDAY = "saturday", "Saturday"
+    SUNDAY = "sunday", "Sunday"
 
 class DevicesStatusEnum(models.TextChoices):
     ACTIVE = "active"

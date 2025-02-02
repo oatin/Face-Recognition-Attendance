@@ -112,7 +112,7 @@
             <div class="col-span-1">{{hour}}:00</div>
           {% endfor %}
 
-          {% with days="Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday"|split:"," %}
+          {% with days="monday,tuesday,wednesday,thursday,friday,saturday,sunday"|split:"," %}
             {% for day in days %}
               <div class="col-span-1 text-gray-500 flex items-center justify-center h-full">
                 {{day|slice:":3"|upper}}

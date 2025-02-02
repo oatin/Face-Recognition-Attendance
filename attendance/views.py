@@ -22,11 +22,6 @@ def download_attendance_csv(request, course_id):
     writer.writerow(['Email','First Name', 'Last Name', 'Date', 'Status'])
     
     for attendance in attendances:
-        print(attendance['student__email'],
-            attendance['student__first_name'],
-            attendance['student__last_name'],
-            attendance['date'].strftime('%Y-%m-%d'),
-            attendance['status'])
         writer.writerow([
             attendance['student__email'],
             attendance['student__first_name'],
