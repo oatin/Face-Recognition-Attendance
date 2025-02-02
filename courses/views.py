@@ -1,16 +1,19 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponse, JsonResponse
+from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.db.models import Count, Case, When, Value, IntegerField, Q, F
+from django.db import transaction, IntegrityError
 
 from .models import Course, Enrollment
 from attendance.models import Attendance, Schedule
 from members.models import Member
 from common.models import Room
 
-from datetime import datetime, timedelta, date
-from django.core import serializers
+from datetime import date
+
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth import get_user_model
+import json
 
 @login_required
 def enroll_course(request, course_id):
@@ -24,6 +27,63 @@ def enroll_course(request, course_id):
 
     return redirect('course_detail', course_id=course_id)
 
+@csrf_exempt
+def create_enrollments(request, course_id):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            enrollments = data.get('enrollments', [])
+            unique_emails = {item.get('email') for item in enrollments if item.get('email')}
+
+            course = get_object_or_404(Course, id=course_id)
+            enrollments_to_create = []
+
+            with transaction.atomic():
+                for email in unique_emails:
+                    member = Member.objects.filter(email=email).first()
+
+                    if Enrollment.objects.filter(email=email, course=course).exists():
+                        continue
+
+                    enrollments_to_create.append(Enrollment(student=member, email=email, course=course))
+
+                Enrollment.objects.bulk_create(enrollments_to_create)
+
+            return JsonResponse({'status': 'success', 'message': 'Enrollments created successfully'})
+
+        except json.JSONDecodeError:
+            return JsonResponse({'status': 'error', 'message': 'Invalid JSON data'}, status=400)
+        except Course.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Course not found'}, status=404)
+        except IntegrityError as e:
+            return JsonResponse({'status': 'error', 'message': 'Integrity error occurred'}, status=400)
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': 'An unexpected error occurred'}, status=500)
+
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
+
+def add_student(request, course_id):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        course = get_object_or_404(Course, id=course_id)
+        User = get_user_model()
+        
+        try:
+            student = User.objects.get(email=email, role='student')
+            Enrollment.objects.get_or_create(student=student, course=course)
+            return JsonResponse({'success': True, 'message': 'Student added successfully!'})
+        except User.DoesNotExist:
+            return JsonResponse({'success': False, 'message': 'Student with this email does not exist.'})
+    
+    return JsonResponse({'success': False, 'message': 'Invalid request method.'})
+
+def kick_student(request, enrollment_id):
+    if request.method == 'POST':
+        enrollment = get_object_or_404(Enrollment, id=enrollment_id)
+
+        enrollment.delete()
+
+        return JsonResponse({'success': True, 'message': 'Student deleted successfully!'})
 
 @login_required
 def search_view(request):
@@ -84,6 +144,7 @@ def course_detail(request, course_id):
         today = date.today()
         attendances = Attendance.objects.filter(course=course, date=today)
         schedules = Schedule.objects.filter(course=course) 
+        enrollments = Enrollment.objects.filter(course=course_id)
         
         if request.method == 'POST':
             for key, value in request.POST.items():
@@ -99,7 +160,7 @@ def course_detail(request, course_id):
                     except Schedule.DoesNotExist:
                         pass
 
-        attendances_f = Attendance.objects.select_related('student').values('student__first_name', 'student__last_name', 'date', 'status')
+        attendances_f = Attendance.objects.select_related('student').filter(course_id=course_id).values('student__email', 'student__first_name', 'student__last_name', 'date', 'status')
     
         attendances_list = list(attendances_f)
         
@@ -111,6 +172,7 @@ def course_detail(request, course_id):
             'attendances': attendances,
             'schedules':schedules,
             'attendances_data':attendances_list,
+            'enrollments': enrollments,
         }
         return render(request, 'course_teacher.html', context)
 

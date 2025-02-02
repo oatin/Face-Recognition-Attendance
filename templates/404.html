@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page Not Found</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        let countdownTime = 5; 
+        function updateCountdown() {
+            const countdownElement = document.getElementById("countdown");
+            countdownElement.textContent = countdownTime;
+            countdownTime--;
+            if (countdownTime < 0) {
+                window.location.href = "{% url 'home' %}";
+            }
+        }
+
+        setInterval(updateCountdown, 1000);
+    </script>
+</head>
+<body class="bg-gray-100 h-screen flex items-center justify-center">
+    <div class="text-center max-w-lg p-6 bg-white rounded-2xl shadow-lg">
+        <h1 class="text-4xl font-extrabold text-red-500 mb-4">404</h1>
+        <h2 class="text-2xl font-semibold text-gray-700 mb-2">Oops! Page Not Found</h2>
+        <p class="text-gray-600 mb-6">
+            ขออภัย ไม่พบหน้าที่คุณกำลังค้นหา จะพาคุณกลับไปที่หน้าหลักใน <span id="countdown">5</span> วินาที...
+        </p>
+        <p class="text-gray-600">หากไม่ทำการ redirect อัตโนมัติ <a href="{% url 'home' %}" class="text-blue-500 hover:underline">คลิกที่นี่</a> เพื่อกลับสู่หน้าหลักทันที</p>
+    </div>
+</body>
+</html>

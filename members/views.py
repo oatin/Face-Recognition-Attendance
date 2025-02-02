@@ -12,9 +12,10 @@ from courses.models import Course, Enrollment
 from devices.models import TrainingImage
 
 from common.utils import predFacePose
-from .forms import TrainingImageForm
 from django.utils.timezone import now
-from datetime import timedelta
+
+def custom_404(request, exception):
+    return render(request, '404.html', status=404)
 
 @require_http_methods(["POST"])
 def validate_face_poses(request):

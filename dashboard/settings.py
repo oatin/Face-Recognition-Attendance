@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import os
-import dj_database_url
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -102,13 +101,12 @@ DATABASES = {
     # },
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'db_face_scan',  
-        'USER': 'admin',         
-        'PASSWORD': 'a',         
-        'HOST': 'localhost',            
-        'PORT': '5432',         
+        'NAME': os.getenv('NAME'),
+        'USER': os.getenv('USER'),
+        'PASSWORD': os.getenv('PASSWORD'),      
+        'HOST': os.getenv('HOST'),         
+        'PORT': os.getenv('PORT'),  
     }
-    # 'default': dj_database_url.config(default=os.getenv('DATABASE_URL'))
 }
 
 

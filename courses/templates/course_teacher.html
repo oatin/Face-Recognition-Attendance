@@ -66,33 +66,43 @@
 
     <div class="max-w-screen space-y-6">
         <div class="mb-4 border-gray-200 dark:border-gray-700">
-          <ul class="flex flex-wrap text-sm font-medium text-center" id="tabs-menu">
-            <li class="me-2">
-              <button class="tab-btn active-tab inline-block p-4 border-b-2 rounded-t-lg" data-target="#attendance-tab-content">
-                Attendance
-              </button>
-            </li>
-            <li class="me-2">
-              <button class="tab-btn inline-block p-4 border-b-2 rounded-t-lg" data-target="#setting-tab-content">
-                Setting
-              </button>
-            </li>
-            <li class="me-2">
-              <button class="tab-btn inline-block p-4 border-b-2 rounded-t-lg" data-target="#exports-tab-content">
-                Exports
-              </button>
-            </li>
-            <li class="me-2">
-              <button class="tab-btn inline-block p-4 border-b-2 rounded-t-lg" data-target="#imports-tab-content">
-                Imports
-              </button>
-            </li>
-          </ul>
+            <ul class="flex flex-wrap text-sm font-medium text-center" id="tabs-menu">
+                <li class="me-2">
+                    <button class="tab-btn inline-block p-4 border-b-2 rounded-t-lg active-tab" data-target="#students-tab-content">
+                      Students
+                    </button>
+                </li>
+                <li class="me-2">
+                  <button class="tab-btn inline-block p-4 border-b-2 rounded-t-lg" data-target="#attendance-tab-content">
+                    Attendance
+                  </button>
+                </li>
+                <li class="me-2">
+                  <button class="tab-btn inline-block p-4 border-b-2 rounded-t-lg" data-target="#setting-tab-content">
+                    Setting
+                  </button>
+                </li>
+                <li class="me-2">
+                  <button class="tab-btn inline-block p-4 border-b-2 rounded-t-lg" data-target="#exports-tab-content">
+                    Exports
+                  </button>
+                </li>
+                <li class="me-2">
+                  <button class="tab-btn inline-block p-4 border-b-2 rounded-t-lg" data-target="#imports-tab-content">
+                    Imports
+                  </button>
+                </li>
+                <li class="ml-auto">
+                    <button id="openModal" data-modal-target="crud-modal" class="text-white bg-blue-700 hover:bg-blue-800 rounded-lg px-5 py-2.5">
+                        Add Student
+                    </button>
+                </li>
+            </ul>
         </div>
     
         <!-- Tab Contents -->
         <div>
-            <div id="attendance-tab-content" class="tab-content p-4 rounded-lg">
+            <div id="attendance-tab-content" class="tab-content hidden p-4 rounded-lg">
                 <form method="POST" action="{% url 'update_attendance' course.id %}">
                     {% csrf_token %}
                     <table class="w-full text-sm text-left text-gray-500 border-collapse border border-gray-300">
@@ -190,13 +200,14 @@
                         <input type="date" id="start-date" class="border border-gray-300 rounded-lg p-2 mr-4">
                         <input type="date" id="end-date" class="border border-gray-300 rounded-lg p-2 mr-4">
                         <button id="filter-btn" class="bg-blue-500 text-white rounded-lg p-2 hover:bg-blue-600 transition duration-300">Filter</button>
-                        <div id="download-csv-url" data-url="{% url 'download_attendance_csv' %}"><button id="download-csv-btn" class="bg-green-500 text-white rounded-lg p-2 hover:bg-green-600 transition duration-300 ml-4">Download CSV</button></div>
+                        <div id="download-csv-url" data-url="{% url 'download_attendance_csv' course.id %}"><button id="download-csv-btn" class="bg-blue-500 text-white rounded-lg p-2 hover:bg-blue-600 transition duration-300 ml-4">Download CSV</button></div>
                     </div>
                 
                     <table id="attendance-results" class="min-w-full text-center bg-white border border-gray-300">
                         <thead>
                             <tr class="bg-gray-200">
                                 <th class="py-2 px-4 border-b">Date</th>
+                                <th class="py-2 px-4 border-b">Email</th>
                                 <th class="py-2 px-4 border-b">First Name</th>
                                 <th class="py-2 px-4 border-b">Last Name</th>
                                 <th class="py-2 px-4 border-b">Status</th>
@@ -208,13 +219,285 @@
                 </div>
             </div>
             <div id="imports-tab-content" class="tab-content hidden p-4 rounded-lg">
-            <p>This is the content for the Contacts tab.</p>
+                <h1 class="text-2xl font-bold mb-4 text-gray-800">อัปโหลดและแสดงไฟล์ CSV</h1>
+                <input
+                  type="file"
+                  id="csvFileInput"
+                  accept=".csv"
+                  class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 mb-6"
+                />
+                <div id="columnSelection" class="hidden mb-6">
+                  <label for="emailColumn" class="block text-sm font-medium text-gray-700">เลือกคอลัมน์ email</label>
+                  <select id="emailColumn" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                  </select>
+                  <button id="confirmSelection" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">ยืนยัน</button>
+                </div>
+                <div class="overflow-x-auto">
+                  <table id="csvTable" class="min-w-full bg-white border border-gray-200"></table>
+                </div>
+            </div>
+            <div id="students-tab-content" class="tab-content p-4 rounded-lg">
+                <div class="flex items-center justify-between flex-column flex-wrap md:flex-row space-y-4 md:space-y-0 pb-4 bg-white">
+                    <label for="table-search" class="sr-only">Search</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
+                            <svg class="w-4 h-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+                            </svg>
+                        </div>
+                        <input type="text" id="table-search-users" class="block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-white focus:ring-blue-500 focus:border-blue-500" placeholder="Search for users">
+                    </div>
+                </div>
+                <table class="w-full text-sm text-left rtl:text-right text-gray-500">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                        <tr>
+                            <th scope="col" class="p-4">
+                                <div class="flex items-center">
+                                    <input id="checkbox-all-search" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500">
+                                    <label for="checkbox-all-search" class="sr-only">checkbox</label>
+                                </div>
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Name
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Invited
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Status
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Action
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for enrollment in enrollments %}
+                        <tr class="bg-white border-b hover:bg-gray-50">
+                            <td class="w-4 p-4">
+                                <div class="flex items-center">
+                                    <input id="checkbox-table-search-1" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500">
+                                    <label for="checkbox-table-search-1" class="sr-only">checkbox</label>
+                                </div>
+                            </td>
+                            <th scope="row" class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap">
+                                {% if enrollment.student.profile_path.url %}
+                                <img class="w-10 h-10 rounded-full" src="{{enrollment.student.profile_path.url}}" alt="Jese image">
+                                <div class="ps-3">
+                                    <div class="text-base font-semibold">{{enrollment.student.first_name}} {{enrollment.student.last_name}}</div>
+                                    <div class="font-normal text-gray-500">{{enrollment.student.email}}</div>
+                                </div>  
+                                {% else %}
+                                <div class="w-10 h-10 rounded-full flex items-center text-sm text-blue-800 border-blue-300 rounded-lg dark:text-blue-400 dark:border-blue-800" role="alert">
+                                    <svg class="shrink-0 inline w-4 h-4 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                                      <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+                                    </svg>
+                                </div>
+                                <div class="ps-3">
+                                    <div class="text-base font-semibold">รอผู้ใช้สมัครบัญชี</div>
+                                    <div class="font-normal text-gray-500">{{enrollment.email}}</div>
+                                </div>  
+                                {% endif %}
+                            </th>
+                            <td class="px-6 py-4">
+                                {{enrollment.created_at}}
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="flex items-center">
+                                    {% if enrollment.student %}
+                                    <div class="h-2.5 w-2.5 rounded-full bg-green-500 me-2"></div>Completed
+                                    {% else %}
+                                    <div class="h-2.5 w-2.5 rounded-full bg-red-500 me-2"></div>Pending
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <form class="delete-form" action="{% url 'kick_student' enrollment.id %}" method="POST" data-student-id="{{ enrollment.student.id }}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="font-medium text-blue-600 hover:underline">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>                
             </div>
         </div>
     </div>
 </div>
+<!-- Modal -->
+<div id="crud-modal" class="hidden fixed inset-0 z-50 flex justify-center items-center bg-black bg-opacity-50">
+    <div class="bg-white rounded-lg shadow-lg p-6 w-96">
+      <!-- Header -->
+      <div class="flex justify-between items-center border-b pb-4 mb-4">
+        <h3 class="text-lg font-semibold">Add Student {{ course.course_name }}</h3>
+        <button id="closeModal" class="text-gray-400 hover:text-gray-900 focus:outline-none">
+          &times;
+        </button>
+      </div>
+  
+      <!-- Form -->
+      <form id="studentForm">
+        <label for="email" class="block mb-2 text-sm font-medium text-gray-900">Email</label>
+        <input type="email" id="email" name="email" required 
+               class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg w-full p-2 mb-4" 
+               placeholder="example@student.com">
+        <button type="submit" 
+                class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none font-medium rounded-lg px-4 py-2">
+          Add Student
+        </button>
+      </form>
+    </div>
+</div>
 {% endblock %}
 {% block script %}
+document.getElementById('openModal').addEventListener('click', function() {
+    document.getElementById('crud-modal').classList.remove('hidden');
+});
+
+document.getElementById('closeModal').addEventListener('click', function() {
+    document.getElementById('crud-modal').classList.add('hidden');
+});
+
+window.addEventListener('click', function(event) {
+    if (event.target === document.getElementById('crud-modal')) {
+        document.getElementById('crud-modal').classList.add('hidden');
+    }
+});
+document.addEventListener("DOMContentLoaded", function () {
+    const forms = document.querySelectorAll(".delete-form");
+
+    forms.forEach(form => {
+        form.addEventListener("submit", function (event) {
+            event.preventDefault();  
+
+            const formData = new FormData(form);
+            const studentId = form.getAttribute("data-student-id");
+
+            fetch(form.action, {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.json()) 
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);  
+                    document.querySelector(`[data-student-id="${studentId}"]`).closest('tr').remove();
+                } else {
+                    alert(data.message);  
+                }
+            })
+            .catch(error => {
+                alert("An error occurred: " + error); 
+            });
+        });
+    });
+});
+
+document.getElementById('csvFileInput').addEventListener('change', function(event) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const text = e.target.result;
+        const rows = text.split('\n');
+        const headers = rows[0].split(','); 
+  
+        // แสดงตาราง CSV
+        let table = '';
+        rows.forEach((row, index) => {
+          const cells = row.split(',');
+          table += '<tr class="' + (index === 0 ? 'bg-gray-50' : 'hover:bg-gray-50') + '">';
+          cells.forEach(cell => {
+            if (index === 0) {
+              table += `<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">${cell}</th>`;
+            } else {
+              table += `<td class="px-6 py-4 text-sm text-gray-700">${cell}</td>`;
+            }
+          });
+          table += '</tr>';
+        });
+        document.getElementById('csvTable').innerHTML = table;
+  
+        // แสดงตัวเลือกคอลัมน์
+        const columnSelection = document.getElementById('columnSelection');
+        const emailColumnSelect = document.getElementById('emailColumn');
+        emailColumnSelect.innerHTML = headers.map(header => `<option value="${header}">${header}</option>`).join('');
+        columnSelection.classList.remove('hidden');
+      };
+      reader.readAsText(file);
+    }
+  });
+  
+  document.getElementById('confirmSelection').addEventListener('click', function() {
+    event.preventDefault();
+    const emailColumn = document.getElementById('emailColumn').value;
+    const file = document.getElementById('csvFileInput').files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const text = e.target.result;
+        const rows = text.split('\n');
+        const headers = rows[0].split(',');
+  
+        const emailIndex = headers.indexOf(emailColumn);
+  
+        const enrollments = [];
+        rows.slice(1).forEach(row => {
+          const cells = row.split(',');
+          const email = cells[emailIndex];
+          if (email) {
+            enrollments.push({ email });
+          }
+        });
+  
+        fetch('{% url "import_enrollments" course.id %}', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}',
+          },
+          body: JSON.stringify({ enrollments }),
+        })
+          .then(response => response.json())
+          .then(data => {
+            console.log('Success:', data);
+            alert('สร้าง Enrollment สำเร็จ!');
+          })
+          .catch((error) => {
+            console.error('Error:', error);
+            alert('เกิดข้อผิดพลาดในการสร้าง Enrollment');
+          });
+      };
+      reader.readAsText(file);
+    }
+});
+
+document.getElementById('studentForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+    const email = document.getElementById('email').value;
+    const courseId = {{ course.id }};
+    
+    fetch(`{% url 'teacher_add_student' course.id %}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: `email=${encodeURIComponent(email)}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+            document.getElementById('crud-modal').classList.add('hidden');
+        } else {
+            alert(data.message);
+        }
+    })
+    .catch(error => console.error('Error:', error));
+});
+
 document.querySelectorAll(".tab-btn").forEach((button) => {
     button.addEventListener("click", () => {
       const target = button.dataset.target;
@@ -275,6 +558,7 @@ document.getElementById('filter-btn').addEventListener('click', function(e) {
 
             row.innerHTML = `
                 <td class="py-2 px-4">${attendance.date}</td>
+                <td class="py-2 px-4">${attendance.student__email}</td>
                 <td class="py-2 px-4">${attendance.student__first_name}</td>
                 <td class="py-2 px-4">${attendance.student__last_name}</td>
                 <td class="py-2 px-4">${attendance.status}</td>

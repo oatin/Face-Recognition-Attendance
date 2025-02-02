@@ -13,6 +13,15 @@ class Course(models.Model):
         return self.course_name
 
 class Enrollment(models.Model):
-    student = models.ForeignKey(Member, on_delete=models.CASCADE, related_name="enrollments")
+    student = models.ForeignKey(Member, on_delete=models.CASCADE, related_name="enrollments", null=True, blank=True, default=None)
+    email = models.EmailField(null=True, blank=True)  
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="enrollments")
-    create_at = models.DateField(auto_now_add=True)
+    created_at = models.DateField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['email', 'course'], name='unique_enrollment')
+        ]
+
+    def __str__(self):
+        return f"{self.email or self.student.email} - {self.course.course_name}"
