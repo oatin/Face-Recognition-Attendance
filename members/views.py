@@ -113,7 +113,7 @@ def home(request):
         attendance_records = Attendance.objects.filter(student=member).order_by('date')
 
         today = now().date()
-        day_of_week = today.strftime('%A')  
+        day_of_week = today.strftime('%A').lower()
 
         enrollments = Enrollment.objects.filter(student=member)
 
@@ -171,7 +171,7 @@ def home(request):
         teacher = request.user
 
         today = now().date()
-        day_of_week = today.strftime('%A')  
+        day_of_week = today.strftime('%A').lower()
 
         courses_taught = Course.objects.filter(teacher=teacher)
         schedules = Schedule.objects.filter(
@@ -227,7 +227,7 @@ def home(request):
             attendance_summary['leave'] = attendance_records.filter(status='leave').count()
 
             attendance_summary['total'] = attendance_summary['present'] + attendance_summary['leave'] + attendance_summary['absence']
-            
+        
         return render(request, "teacher_home.html",{'attendance_summary':attendance_summary, 'class_days': class_days, "schedules": schedules,'attendance_data':attendance_data})
 
     elif request.user.role == "admin":
