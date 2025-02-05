@@ -6,3 +6,5 @@ keras
 opencv-python
 dlib
 pytz
+pillow
+scikit-learn

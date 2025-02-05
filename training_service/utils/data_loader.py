@@ -6,6 +6,9 @@ from functools import lru_cache
 from .preprocess import FacePreprocessor
 from .api_communicator import APIClient
 
+from PIL import Image
+from sklearn.utils import shuffle
+
 class DataLoader:
     def __init__(
         self,
@@ -82,6 +85,18 @@ class DataLoader:
                     X.append(processed_face)
                     y.append(student_id)
 
+        unknown_folder = "preprocess_image/unknown"
+        if os.path.exists(unknown_folder):
+            for filename in os.listdir(unknown_folder):
+                if filename.endswith(('.jpg', '.jpeg', '.png')):
+                    image_path = os.path.join(unknown_folder, filename)
+                    try:
+                        image = Image.open(image_path).resize((224, 224))
+                        image = np.array(image) / 255.0  
+                        X.append(image)
+                        y.append("unknown")  
+                    except Exception as e:
+                        print(f"Error loading image {image_path}: {e}")
         if not X:
             return np.array([]), np.array([]), np.array([])
 
@@ -92,6 +107,7 @@ class DataLoader:
         self.inverse_label_map = {v: k for k, v in self.label_map.items()}
         y = np.array([self.label_map[label] for label in y])
 
+        X, y = shuffle(X, y, random_state=42)
         return X, y, self.inverse_label_map
 
     def save_model_info(
