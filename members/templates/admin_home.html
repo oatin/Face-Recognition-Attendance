@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard{% endblock %}
+{% block menu %}
+<div class="flex flex-col flex-1 space-y-4">
+    <a href="{% url 'home' %}" class="p-3 rounded-lg hover:bg-purple-100">
+        <svg width="32px" height="32px" viewBox="0 -0.5 21 21" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" fill="#000000"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <title>menu_navigation_grid [#1529]</title> <desc>Created with Sketch.</desc> <defs> </defs> <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"> <g id="Dribbble-Light-Preview" transform="translate(-99.000000, -200.000000)" fill="#000000"> <g id="icons" transform="translate(56.000000, 160.000000)"> <path d="M60.85,51 L57.7,51 C55.96015,51 54.55,52.343 54.55,54 L54.55,57 C54.55,58.657 55.96015,60 57.7,60 L60.85,60 C62.58985,60 64,58.657 64,57 L64,54 C64,52.343 62.58985,51 60.85,51 M49.3,51 L46.15,51 C44.41015,51 43,52.343 43,54 L43,57 C43,58.657 44.41015,60 46.15,60 L49.3,60 C51.03985,60 52.45,58.657 52.45,57 L52.45,54 C52.45,52.343 51.03985,51 49.3,51 M60.85,40 L57.7,40 C55.96015,40 54.55,41.343 54.55,43 L54.55,46 C54.55,47.657 55.96015,49 57.7,49 L60.85,49 C62.58985,49 64,47.657 64,46 L64,43 C64,41.343 62.58985,40 60.85,40 M52.45,43 L52.45,46 C52.45,47.657 51.03985,49 49.3,49 L46.15,49 C44.41015,49 43,47.657 43,46 L43,43 C43,41.343 44.41015,40 46.15,40 L49.3,40 C51.03985,40 52.45,41.343 52.45,43" id="menu_navigation_grid-[#1529]"> </path> </g> </g> </g> </g></svg>
+    </a>
+    <a href="{% url 'admin_members' %}" class="p-3 rounded-lg hover:bg-purple-100">
+        <svg fill="#000000" width="32px" height="32px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <title>member-card</title> <path d="M0 26.016q0 0.832 0.576 1.408t1.44 0.576h5.984v-1.984h-0.992q-0.416 0-0.704-0.288t-0.288-0.704 0.288-0.704 0.704-0.32h4q0.384 0 0.704 0.32t0.288 0.704-0.288 0.704-0.704 0.288h-0.992v1.984h12v-1.984h-1.024q-0.384 0-0.704-0.288t-0.288-0.704 0.288-0.704 0.704-0.32h4q0.416 0 0.704 0.32t0.32 0.704-0.32 0.704-0.704 0.288h-0.992v1.984h6.016q0.8 0 1.408-0.576t0.576-1.408v-20q0-0.832-0.576-1.408t-1.408-0.608h-28q-0.832 0-1.44 0.608t-0.576 1.408v20zM4 22.016v-14.016h14.016v14.016h-14.016zM7.040 20h7.936q-1.12-1.472-2.976-1.856v-0.32q0.896-0.352 1.44-1.088t0.576-1.728v-1.984q0-1.248-0.896-2.144t-2.112-0.864-2.144 0.864-0.864 2.144v1.984q0 0.96 0.544 1.728t1.472 1.088v0.32q-1.856 0.384-2.976 1.856zM20 22.016v-2.016h2.016v2.016h-2.016zM20 18.016v-2.016h10.016v2.016h-10.016zM20 14.016v-2.016h4v2.016h-4zM20 10.016v-2.016h6.016v2.016h-6.016zM26.016 14.016v-2.016h4v2.016h-4zM28 10.016v-2.016h2.016v2.016h-2.016z"></path> </g></svg>    </a>
+    <a href="{% url 'admin_dashboard' %}" class="p-3 rounded-lg hover:bg-purple-100">
+        <svg width="32px" height="32px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path fill-rule="evenodd" clip-rule="evenodd" d="M11.0175 19C10.6601 19 10.3552 18.7347 10.297 18.373C10.2434 18.0804 10.038 17.8413 9.76171 17.75C9.53658 17.6707 9.31645 17.5772 9.10261 17.47C8.84815 17.3365 8.54289 17.3565 8.30701 17.522C8.02156 17.7325 7.62943 17.6999 7.38076 17.445L6.41356 16.453C6.15326 16.186 6.11944 15.7651 6.33361 15.458C6.49878 15.2105 6.52257 14.8914 6.39601 14.621C6.31262 14.4332 6.23906 14.2409 6.17566 14.045C6.08485 13.7363 5.8342 13.5051 5.52533 13.445C5.15287 13.384 4.8779 13.0559 4.87501 12.669V11.428C4.87303 10.9821 5.18705 10.6007 5.61601 10.528C5.94143 10.4645 6.21316 10.2359 6.33751 9.921C6.37456 9.83233 6.41356 9.74433 6.45451 9.657C6.61989 9.33044 6.59705 8.93711 6.39503 8.633C6.1424 8.27288 6.18119 7.77809 6.48668 7.464L7.19746 6.735C7.54802 6.37532 8.1009 6.32877 8.50396 6.625L8.52638 6.641C8.82735 6.84876 9.21033 6.88639 9.54428 6.741C9.90155 6.60911 10.1649 6.29424 10.2375 5.912L10.2473 5.878C10.3275 5.37197 10.7536 5.00021 11.2535 5H12.1115C12.6248 4.99976 13.0629 5.38057 13.1469 5.9L13.1625 5.97C13.2314 6.33617 13.4811 6.63922 13.8216 6.77C14.1498 6.91447 14.5272 6.87674 14.822 6.67L14.8707 6.634C15.2842 6.32834 15.8528 6.37535 16.2133 6.745L16.8675 7.417C17.1954 7.75516 17.2366 8.28693 16.965 8.674C16.7522 8.99752 16.7251 9.41325 16.8938 9.763L16.9358 9.863C17.0724 10.2045 17.3681 10.452 17.7216 10.521C18.1837 10.5983 18.5235 11.0069 18.525 11.487V12.6C18.5249 13.0234 18.2263 13.3846 17.8191 13.454C17.4842 13.5199 17.2114 13.7686 17.1083 14.102C17.0628 14.2353 17.0121 14.3687 16.9562 14.502C16.8261 14.795 16.855 15.1364 17.0323 15.402C17.2662 15.7358 17.2299 16.1943 16.9465 16.485L16.0388 17.417C15.7792 17.6832 15.3698 17.7175 15.0716 17.498C14.8226 17.3235 14.5001 17.3043 14.2331 17.448C14.0428 17.5447 13.8475 17.6305 13.6481 17.705C13.3692 17.8037 13.1636 18.0485 13.1099 18.346C13.053 18.7203 12.7401 18.9972 12.3708 19H11.0175Z" stroke="#000000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path> <path fill-rule="evenodd" clip-rule="evenodd" d="M13.9747 12C13.9747 13.2885 12.9563 14.333 11.7 14.333C10.4437 14.333 9.42533 13.2885 9.42533 12C9.42533 10.7115 10.4437 9.66699 11.7 9.66699C12.9563 9.66699 13.9747 10.7115 13.9747 12Z" stroke="#000000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>    
+    </a>
+</div>
+{% endblock %}
+{% block content %}
+<div class="flex flex-col px-8 py-4 mx-5 bg-white shadow-sm">
+    <div class="lg:flex mb-6">
+        <p class="text-2xl font-semibold mb-2 lg:mb-0">Dashboard</p>
+    </div>
+
+    <nav class="text-sm font-semibold mb-6" aria-label="Breadcrumb">
+        <ol class="list-none p-0 inline-flex">
+          <li class="flex items-center text-blue-500">
+            <a href="{% url 'home' %}" class="text-gray-700">Home</a>
+            <svg class="fill-current w-3 h-3 mx-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M285.476 272.971L91.132 467.314c-9.373 9.373-24.569 9.373-33.941 0l-22.667-22.667c-9.357-9.357-9.375-24.522-.04-33.901L188.505 256 34.484 101.255c-9.335-9.379-9.317-24.544.04-33.901l22.667-22.667c9.373-9.373 24.569-9.373 33.941 0L285.475 239.03c9.373 9.372 9.373 24.568.001 33.941z"/></svg>
+          </li>
+          <li class="flex items-center">
+            <a href="{% url 'home' %}" class="text-gray-600">Dashboard</a>
+          </li>
+        </ol>
+    </nav>
+
+    <div class="flex flex-wrap flex-col md:flex-row md:mb-20">
+        <div class="container mx-auto space-y-6">
+        
+            <!-- Row 1: Cards -->
+            <div class="grid grid-cols-1 gap-4 px-4 mt-8 sm:grid-cols-4 sm:px-8">
+                <div class="flex items-center bg-white border rounded-sm overflow-hidden shadow">
+                    <div class="p-4 bg-green-400">
+                        <svg fill="#ffffff" width="64px" height="64px" viewBox="0 0 64 64" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;" version="1.1" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:serif="http://www.serif.com/" xmlns:xlink="http://www.w3.org/1999/xlink"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g id="ICON"> <path d="M60,3.5l-56,-0c-0.552,0 -1,0.448 -1,1c0,0.552 0.448,1 1,1l2.171,-0c-0.111,0.313 -0.171,0.649 -0.171,1l-0,10.176c-0,0.552 0.448,1 1,1c0.552,0 1,-0.448 1,-1l0,-6.676l44,-0c0.552,0 1,-0.448 1,-1c0,-0.552 -0.448,-1 -1,-1l-44,-0l0,-1.5c0,-0.552 0.448,-1 1,-1l46,-0c0.552,-0 1,0.448 1,1c0,0 -0,30.5 -0,30.5c-0,0.552 -0.448,1 -1,1l-23,-0l-0,-10.25c-0,-6.075 -4.925,-11 -11,-11c-0.665,0 -1.335,0 -2,0c-6.075,0 -11,4.925 -11,11l0,17.542c-1.104,0.329 -2.12,0.929 -2.95,1.758c-1.313,1.313 -2.05,3.093 -2.05,4.95c0,3.799 0,8 0,8c0,0.552 0.448,1 1,1l32,-0c0.552,-0 1,-0.448 1,-1l-0,-8c0,-1.857 -0.737,-3.637 -2.05,-4.95c-0.83,-0.829 -1.846,-1.429 -2.95,-1.758l-0,-5.292l23,0c1.657,-0 3,-1.343 3,-3l0,-30.5c-0,-0.351 -0.06,-0.687 -0.171,-1l2.171,-0c0.552,0 1,-0.448 1,-1c0,-0.552 -0.448,-1 -1,-1Zm-30,43.5l-4.083,0c-0.477,2.836 -2.946,5 -5.917,5c-2.971,-0 -5.44,-2.164 -5.917,-5l-4.083,0c-1.326,-0 -2.598,0.527 -3.536,1.464c-0.937,0.938 -1.464,2.21 -1.464,3.536c0,0 0,7 0,7l4,-0l0,-4c0,-0.552 0.448,-1 1,-1c0.552,0 1,0.448 1,1l0,4l18,-0l0,-4c0,-0.552 0.448,-1 1,-1c0.552,0 1,0.448 1,1l0,4l4,-0l0,-7c0,-1.326 -0.527,-2.598 -1.464,-3.536c-0.938,-0.937 -2.21,-1.464 -3.536,-1.464Zm-6.126,0l-7.748,0c0.445,1.724 2.012,3 3.874,3c1.862,-0 3.429,-1.276 3.874,-3Zm6.126,-2l-20,-0c0,0 0,-17.25 0,-17.25c0,-4.971 4.029,-9 9,-9c0.665,0 1.335,0 2,0c4.971,0 9,4.029 9,9l0,17.25Zm-2,-17c-0,-0.552 -0.448,-1 -1,-1l-6.382,0c0,-0 -1.724,-3.447 -1.724,-3.447c-0.169,-0.339 -0.515,-0.553 -0.894,-0.553c-0.379,-0 -0.725,0.214 -0.894,0.553l-1.724,3.447c-0,0 -2.382,0 -2.382,0c-0.552,0 -1,0.448 -1,1l0,10c0,2.761 2.239,5 5,5c1.881,0 4.119,0 6,0c2.761,-0 5,-2.239 5,-5c-0,-4.138 -0,-10 -0,-10Zm-2,1l-0,9c-0,1.657 -1.343,3 -3,3c-0,-0 -6,0 -6,0c-1.657,-0 -3,-1.343 -3,-3c0,-0 0,-9 0,-9c-0,0 2,0 2,0c0.379,-0 0.725,-0.214 0.894,-0.553l1.106,-2.211c0,0 1.106,2.211 1.106,2.211c0.169,0.339 0.515,0.553 0.894,0.553l6,-0Zm14.5,6l11.5,0c0.552,-0 1,-0.448 1,-1c-0,-0.552 -0.448,-1 -1,-1l-11.5,0c-0.552,-0 -1,0.448 -1,1c-0,0.552 0.448,1 1,1Zm-3.5,-5l15,0c0.552,0 1,-0.448 1,-1c0,-0.552 -0.448,-1 -1,-1l-15,0c-0.552,0 -1,0.448 -1,1c0,0.552 0.448,1 1,1Zm-0,-5l15,0c0.552,-0 1,-0.448 1,-1c-0,-0.552 -0.448,-1 -1,-1l-15,0c-0.552,-0 -1,0.448 -1,1c-0,0.552 0.448,1 1,1Zm0,-5l15,0c0.552,0 1,-0.448 1,-1c0,-0.552 -0.448,-1 -1,-1l-15,0c-0.552,0 -1,0.448 -1,1c0,0.552 0.448,1 1,1Zm-7,-5l22,0c0.552,-0 1,-0.448 1,-1c-0,-0.552 -0.448,-1 -1,-1l-22,0c-0.552,-0 -1,0.448 -1,1c-0,0.552 0.448,1 1,1Z"></path> </g> </g></svg>
+                    </div>
+                    <div class="px-4 text-gray-700">
+                        <h3 class="text-sm tracking-wider">Teacher</h3>
+                        <p class="text-3xl">{{ count_teacher }}</p>
+                    </div>
+                </div>
+                <div class="flex items-center bg-white border rounded-sm overflow-hidden shadow">
+                    <div class="p-4 bg-blue-400">
+                        <svg height="64px" width="64px" version="1.1" id="_x32_" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512" xml:space="preserve" fill="#ffffff" stroke="#ffffff"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <style type="text/css"> .st0{fill:#ffffff;} </style> <g> <path class="st0" d="M116.738,231.551c0,23.245,14.15,43.315,34.513,49.107c15.262,42.368,55.574,70.776,100.582,70.776 s85.32-28.408,100.58-70.776c20.365-5.792,34.515-25.854,34.515-49.107c0-15.691-6.734-30.652-18.061-40.248l1.661-8.921 c0-3.323-0.229-6.568-0.491-9.821l-0.212-2.593l-2.213,1.374c-30.871,19.146-80.885,27.71-116.754,27.71 c-34.85,0-83.895-8.214-114.902-26.568l-2.259-0.59l-0.188,2.554c-0.192,2.632-0.384,5.256-0.357,8.23l1.632,8.649 C123.466,200.923,116.738,215.876,116.738,231.551z"></path> <path class="st0" d="M356.151,381.077c-9.635-5.97-18.734-11.607-26.102-17.43l-0.937-0.738l-0.972,0.691 c-6.887,4.914-31.204,30.17-51.023,51.172l-10.945-21.273l5.697-4.076v-20.854h-40.07v20.854l5.697,4.076l-10.949,21.281 c-19.825-21.009-44.154-46.265-51.034-51.18l-0.973-0.691l-0.937,0.738c-7.368,5.823-16.469,11.46-26.102,17.43 c-30.029,18.61-64.062,39.697-64.062,77.344c0,22.244,52.241,53.579,168.388,53.579c116.146,0,168.388-31.335,168.388-53.579 C420.213,420.774,386.178,399.687,356.151,381.077z"></path> <path class="st0" d="M131.67,131.824c0,18.649,56.118,42.306,119.188,42.306s119.188-23.656,119.188-42.306v-25.706l43.503-17.702 v55.962c-5.068,0.792-8.964,5.186-8.964,10.45c0,4.503,2.966,8.432,7.242,9.852l-8.653,57.111h40.704l-8.651-57.111 c4.27-1.421,7.232-5.35,7.232-9.852c0-5.295-3.919-9.697-9.014-10.466l-0.21-67.197c0.357-0.621,0.357-1.266,0.357-1.607 c0-0.342,0-0.978-0.149-0.978h-0.002c-0.262-2.446-2.011-4.612-4.56-5.652l-11.526-4.72L267.551,3.238 C262.361,1.118,256.59,0,250.858,0s-11.502,1.118-16.69,3.238L72.834,68.936c-2.863,1.172-4.713,3.773-4.713,6.622 c0,2.842,1.848,5.443,4.716,6.63l58.833,23.928V131.824z"></path> </g> </g></svg>
+                    </div>
+                    <div class="px-4 text-gray-700">
+                        <h3 class="text-sm tracking-wider">Student</h3>
+                        <p class="text-3xl">{{ count_student }}</p>
+                    </div>
+                </div>
+                <div class="flex items-center bg-white border rounded-sm overflow-hidden shadow">
+                    <div class="p-4 bg-indigo-400">
+                        <svg fill="#ffffff" width="64px" height="64px" viewBox="0 0 24 24" id="Layer_2" version="1.1" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" stroke="#ffffff"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><path d="M17.038,7.313H6.962c-0.555,0-1.006,0.452-1.006,1.006v7.591c0,0.555,0.451,1.006,1.006,1.006h10.076 c0.555,0,1.006-0.452,1.006-1.006V8.319C18.044,7.764,17.593,7.313,17.038,7.313z M17.044,15.91c0,0.004-0.003,0.006-0.006,0.006 L6.956,15.91l0.006-7.598l10.082,0.006V15.91z"></path><path d="M20.5,17.406h-0.625V8.125c0-1.378-1.121-2.5-2.5-2.5H6.625c-1.379,0-2.5,1.122-2.5,2.5v9.281H3.5 c-0.276,0-0.5,0.224-0.5,0.5C3,19.612,4.388,21,6.094,21h11.813C19.612,21,21,19.612,21,17.906C21,17.63,20.776,17.406,20.5,17.406z M5.125,8.125c0-0.827,0.673-1.5,1.5-1.5h10.75c0.827,0,1.5,0.673,1.5,1.5v9.25H5.125V8.125z M17.906,20H6.094 c-0.982,0-1.809-0.68-2.033-1.594h15.879C19.715,19.32,18.889,20,17.906,20z"></path><path d="M11.354,19.703h1.291c0.276,0,0.5-0.224,0.5-0.5s-0.224-0.5-0.5-0.5h-1.291c-0.276,0-0.5,0.224-0.5,0.5 S11.078,19.703,11.354,19.703z"></path></g></svg>
+                    </div>
+                    <div class="px-4 text-gray-700">
+                        <h3 class="text-sm tracking-wider">Device</h3>
+                        <p class="text-3xl">{{ count_device }}</p>
+                    </div>
+                </div>
+                <div class="flex items-center bg-white border rounded-sm overflow-hidden shadow">
+                    <div class="p-4 bg-red-400">
+                        <svg fill="#ffffff" width="64px" height="64px" viewBox="0 0 1920 1920" xmlns="http://www.w3.org/2000/svg" stroke="#ffffff"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M1801.441 0v1920H219.03v-439.216h-56.514c-31.196 0-56.515-25.299-56.515-56.47 0-31.172 25.319-56.47 56.515-56.47h56.514V1029.02h-56.514c-31.196 0-56.515-25.3-56.515-56.471 0-31.172 25.319-56.47 56.515-56.47h56.514V577.254h-56.514c-31.196 0-56.515-25.299-56.515-56.47 0-31.172 25.319-56.471 56.515-56.471h56.514V0h1582.412Zm-113.03 112.941H332.06v351.373h56.515c31.196 0 56.514 25.299 56.514 56.47 0 31.172-25.318 56.47-56.514 56.47H332.06v338.824h56.515c31.196 0 56.514 25.3 56.514 56.471 0 31.172-25.318 56.47-56.514 56.47H332.06v338.824h56.515c31.196 0 56.514 25.299 56.514 56.47 0 31.172-25.318 56.471-56.514 56.471H332.06v326.275h1356.353V112.94ZM640.289 425.201H1388.9v112.94H640.288v-112.94Zm0 214.83h639.439v112.94h-639.44v-112.94Zm0 534.845H1388.9v112.94H640.288v-112.94Zm0 214.83h639.439v112.94h-639.44v-112.94Z" fill-rule="evenodd"></path> </g></svg>
+                    </div>
+                    <div class="px-4 text-gray-700">
+                        <h3 class="text-sm tracking-wider">Course</h3>
+                        <p class="text-3xl">{{ count_course }}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Row 2: Charts -->
+            <div class="grid grid-cols-3 gap-4">
+                <div class="bg-white p-6 rounded-lg col-span-2">
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4">User Growth Rate</h2>
+                    <canvas id="userGrowthChart" height="200" class="w-full h-80"></canvas>
+                </div>
+                <div class="bg-white p-6 rounded-lg ">
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4">Attendance by Device</h2>
+                    <canvas id="attendanceByDeviceChart" height="200" class="w-full h-80"></canvas>
+                </div>
+            </div>
+            
+            <!-- Row 3: Notifications -->
+            <div class="bg-white p-6 rounded-lg">
+                <h2 class="text-lg font-semibold mb-4">Problem Reports</h2>
+                <ul class="space-y-2">
+                    {% for report in reports %}
+                    <li class="flex items-center justify-between p-3 border-b last:border-none">
+                        <!-- รายละเอียดปัญหา -->
+                        <div class="flex items-center space-x-4">
+                            <span class="text-gray-600">{{ report.title }}</span>
+                            <span class="text-gray-800 font-medium">{{ report.user.full_name }}</span>
+                            <span class="text-gray-500 text-sm">{{ report.created_at|date:"d.m.Y - h:i A" }}</span>
+                        </div>
+                        
+                        <span class="{% if report.status == 'resolved' %} bg-green-500 {% elif report.status == 'in_progress' %} bg-yellow-500 {% else %} bg-gray-300 {% endif %} text-white px-3 py-1 rounded-full text-sm">
+                            {{ report.get_status_display }}
+                        </span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block script %}
+var ctx = document.getElementById('userGrowthChart').getContext('2d');
+var userGrowthChart = new Chart(ctx, {
+    type: 'line',  // Line chart type
+    data: {
+        labels: {{ labels|safe }},  // List of months (or other time periods)
+        datasets: [{
+            label: 'User Growth Line',
+            data: {{ data|safe }},  // Corresponding number of users
+            borderColor: 'rgb(75, 192, 192)',  // Line color
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',  // Fill color
+            tension: 0.1
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+
+var ctx = document.getElementById('attendanceByDeviceChart').getContext('2d');
+var attendanceByDeviceChart = new Chart(ctx, {
+    type: 'bar',  // Bar chart type
+    data: {
+        labels: {{ devices|safe }},  // Devices names
+        datasets: [{
+            label: 'Attendance Count',
+            data: {{ attendance_counts|safe }},  // Attendance counts for each device
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',  // Bar color
+            borderColor: 'rgb(75, 192, 192)',  // Bar border color
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+{% endblock %}

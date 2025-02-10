@@ -47,15 +47,16 @@ INSTALLED_APPS = [
     "courses",
     "devices",
     "api",
+    "admin_dashboard",
     "rest_framework",
     "rest_framework_simplejwt",
 
-    'django.contrib.sites', # New
+    'django.contrib.sites', 
 
-    'allauth', # New
-    'allauth.account', # New
-    'allauth.socialaccount', # New 
-    'allauth.socialaccount.providers.google', # New
+    'allauth', 
+    'allauth.account', 
+    'allauth.socialaccount', 
+    'allauth.socialaccount.providers.google', 
 ]
 
 MIDDLEWARE = [

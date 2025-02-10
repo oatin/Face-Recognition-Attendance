@@ -17,12 +17,10 @@
     <!-- Sidebar navigation -->
     <nav class="fixed left-0 h-full w-20 bg-white shadow-lg flex flex-col items-center py-4 transform -translate-x-full md:translate-x-0 transition-transform duration-200 ease-in-out z-10" id="sidebar">
         {% block menu %}{% endblock %}
+        <a class="p-3 rounded-lg hover:bg-purple-100 mt-auto cursor-pointer open-modal-btn" data-modal-target="modal_report">
+            <svg fill="#000000" width="32px" height="32px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path fill-rule="evenodd" d="M16,2 C16.2652165,2 16.5195704,2.10535684 16.7071068,2.29289322 L21.7071068,7.29289322 C21.8946432,7.4804296 22,7.73478351 22,8 L22,15 C22,15.2339365 21.9179838,15.4604694 21.7682213,15.6401844 L16.7682213,21.6401844 C16.5782275,21.868177 16.2967798,22 16,22 L8,22 C7.73478351,22 7.4804296,21.8946432 7.29289322,21.7071068 L2.29289322,16.7071068 C2.10535684,16.5195704 2,16.2652165 2,16 L2,8 C2,7.73478351 2.10535684,7.4804296 2.29289322,7.29289322 L7.29289322,2.29289322 C7.4804296,2.10535684 7.73478351,2 8,2 L16,2 Z M15.5857864,4 L8.41421356,4 L4,8.41421356 L4,15.5857864 L8.41421356,20 L15.5316251,20 L20,14.6379501 L20,8.41421356 L15.5857864,4 Z M12,16 C12.5522847,16 13,16.4477153 13,17 C13,17.5522847 12.5522847,18 12,18 C11.4477153,18 11,17.5522847 11,17 C11,16.4477153 11.4477153,16 12,16 Z M12,6 C12.5522847,6 13,6.44771525 13,7 L13,13 C13,13.5522847 12.5522847,14 12,14 C11.4477153,14 11,13.5522847 11,13 L11,7 C11,6.44771525 11.4477153,6 12,6 Z"></path> </g></svg>        </a>
         <a href="{% url 'logout'%}" class="p-3 rounded-lg hover:bg-purple-100 mt-auto">
-            <svg class="w-6 h-6 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                <polyline points="16 17 21 12 16 7" />
-                <line x1="21" y1="12" x2="9" y2="12" />
-            </svg>
+            <svg width="32px" height="32px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path fill-rule="evenodd" clip-rule="evenodd" d="M8.25 5.25L9 4.5H18L18.75 5.25V18.75L18 19.5H9L8.25 18.75V16.5H9.75V18H17.25V6H9.75V7.5H8.25V5.25Z" fill="#000000"></path> <path fill-rule="evenodd" clip-rule="evenodd" d="M7.06068 12.7499L14.25 12.7499L14.25 11.2499L7.06068 11.2499L8.78035 9.53027L7.71969 8.46961L4.18936 11.9999L7.71969 15.5303L8.78035 14.4696L7.06068 12.7499Z" fill="#000000"></path> </g></svg>
         </a>
     </nav>
 
@@ -51,7 +49,93 @@
         </div>
     </div>
     
+    <div id="modal_report" class="modal fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 hidden">
+        <div class="bg-white p-6 rounded-lg shadow-lg w-1/3">
+            <h2 class="text-lg font-bold">Report a Problem</h2>
+    
+            <form class="reportForm" enctype="multipart/form-data" data-form-url="{% url 'report_problem' %}">
+                {% csrf_token %}
+                <label class="block font-semibold">Title</label>
+                <input type="text" name="title" required class="w-full border p-2 rounded-md">
+    
+                <label class="block font-semibold mt-2">Description</label>
+                <textarea name="description" required class="w-full border p-2 rounded-md"></textarea>
+    
+                <label class="block font-semibold mt-2">Attachment</label>
+                <input type="file" name="attachment" class="w-full border p-2 rounded-md">
+    
+                <p class="responseMessage text-green-500 mt-2 hidden"></p>
+                <p class="errorMessage text-red-500 mt-2 hidden"></p>
+    
+                <div class="flex justify-end mt-4">
+                    <button type="button" class="close-modal-btn bg-gray-500 text-white px-4 py-2 rounded mr-2">Cancel</button>
+                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            document.querySelectorAll(".open-modal-btn").forEach(button => {
+                button.addEventListener("click", function() {
+                    const modalId = this.getAttribute("data-modal-target");
+                    const modal = document.getElementById(modalId);
+                    if (modal) {
+                        modal.classList.remove("hidden");
+                    }
+                });
+            });
+
+            document.querySelectorAll(".close-modal-btn").forEach(button => {
+                button.addEventListener("click", function() {
+                    this.closest(".modal").classList.add("hidden");
+                });
+            });
+
+            document.querySelectorAll(".reportForm").forEach(form => {
+                form.addEventListener("submit", function(event) {
+                    event.preventDefault();
+
+                    const modal = this.closest(".modal");
+                    const responseMessage = modal.querySelector(".responseMessage");
+                    const errorMessage = modal.querySelector(".errorMessage");
+                    const formData = new FormData(this);
+                    const url = this.getAttribute("data-form-url");
+
+                    fetch(url, {
+                        method: "POST",
+                        body: formData,
+                        headers: {
+                            "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            responseMessage.textContent = data.message;
+                            responseMessage.classList.remove("hidden");
+                            errorMessage.classList.add("hidden");
+
+                            this.reset();
+                            
+                            setTimeout(() => {
+                                modal.classList.add("hidden");
+                                responseMessage.classList.add("hidden");
+                            }, 2000);
+                        } else {
+                            errorMessage.textContent = "Error: " + JSON.stringify(data.errors);
+                            errorMessage.classList.remove("hidden");
+                            responseMessage.classList.add("hidden");
+                        }
+                    })
+                    .catch(error => {
+                        errorMessage.textContent = "Something went wrong!";
+                        errorMessage.classList.remove("hidden");
+                    });
+                });
+            });
+        });
         document.getElementById('search-input').addEventListener('input', async function() {
             const query = this.value;
             const resultsList = document.getElementById('search-results');
