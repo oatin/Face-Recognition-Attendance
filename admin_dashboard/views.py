@@ -5,6 +5,7 @@ from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
+from datetime import datetime
 
 from members.models import Member
 
@@ -50,6 +51,7 @@ def get_model_data(request, app_label, model_name):
     try:
         model = apps.get_model(app_label, model_name.capitalize())
         data = list(model.objects.values())
+        
         return JsonResponse({"app": app_label, "model": model_name, "data": data})
     except LookupError:
         return JsonResponse({"error": "Model not found"}, status=400)

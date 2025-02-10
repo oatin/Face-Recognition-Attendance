@@ -111,8 +111,6 @@ document.addEventListener("DOMContentLoaded", function () {
         return url;
     }
     
-
-    // ✅ เปิด Model Table
     document.querySelectorAll(".view-model-btn").forEach(button => {
         button.addEventListener("click", function () {
             selectedApp = this.getAttribute("data-app");
@@ -164,10 +162,9 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    // ✅ เปิด Modal สำหรับเพิ่มข้อมูล
     document.getElementById("addRecord").addEventListener("click", function () {
         selectedId = null;
-        openModal("Add New Record");
+        openAddModal("Add New Record");
     });
 
     function openModal(title, id = null) {
@@ -210,8 +207,47 @@ document.addEventListener("DOMContentLoaded", function () {
                 document.getElementById("recordModal").classList.remove("hidden");
             });
     }
-   
-
+    function openAddModal(title) {
+        document.getElementById("modalTitle").textContent = title;
+        document.getElementById("recordModel").value = selectedModel;
+        document.getElementById("recordApp").value = selectedApp;
+        document.getElementById("recordId").value = "";  
+    
+        let url = getUrl("get_model_data", selectedApp, selectedModel);
+    
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                let fields = document.getElementById("recordFields");
+                fields.innerHTML = "";  
+    
+                Object.keys(data.data[0]).forEach(key => {
+                    if (key !== "id") {  
+                        let fieldWrapper = document.createElement("div");
+                        fieldWrapper.classList.add("mb-4");
+    
+                        let label = document.createElement("label");
+                        label.setAttribute("for", key);
+                        label.classList.add("block", "font-semibold");
+                        label.innerText = key;
+    
+                        let inputElement = document.createElement("input");
+                        inputElement.setAttribute("type", "text");
+                        inputElement.setAttribute("name", key);
+                        inputElement.classList.add("w-full", "border", "p-2", "rounded-md");
+    
+                        fieldWrapper.appendChild(label);
+                        fieldWrapper.appendChild(inputElement);
+                        fields.appendChild(fieldWrapper);
+                    }
+                });
+    
+                document.getElementById("recordModal").classList.remove("hidden");
+            })
+            .catch(error => console.error("Error loading data:", error));
+    }
+    
+    
     document.getElementById("recordForm").addEventListener("submit", function (event) {
         event.preventDefault();
     
