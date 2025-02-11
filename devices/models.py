@@ -48,6 +48,7 @@ class FaceModel(models.Model):
     model_path = models.CharField(max_length=255)
     inverse_label_map = models.CharField(max_length=255)
     updated_at = models.DateTimeField(auto_now=True)
+    last_enrollment_count = models.IntegerField(default=0)  
 
     def __str__(self):
         return f"Model v{self.model_version}"

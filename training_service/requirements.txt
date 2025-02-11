@@ -8,3 +8,5 @@ dlib
 pytz
 pillow
 scikit-learn
+apscheduler 
+tzdata

@@ -70,6 +70,24 @@ class EnrollmentViewSet(ModelViewSet):
     serializer_class = EnrollmentSerializer
     permission_classes = [IsAuthenticated]
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+
+        allowed_params = {"course_id"}
+        query_params = set(self.request.query_params.keys())
+
+        invalid_params = query_params - allowed_params
+        if invalid_params:
+            raise ValidationError({param: "This parameter is not allowed." for param in invalid_params})
+
+        course_id = self.request.query_params.get('course_id')
+        if course_id:
+            if not course_id.isdigit():
+                raise ValidationError({"course_id": "Must be a valid integer."})
+            queryset = queryset.filter(course_id=int(course_id))
+
+        return queryset
+
 class FaceModelViewSet(ModelViewSet):
     queryset = FaceModel.objects.all().order_by('updated_at')
     serializer_class = FaceModelSerializer
