@@ -1,13 +1,75 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.apps import apps
 from django.forms.models import model_to_dict
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
-from datetime import datetime
+import json
+from django.contrib import messages
 
 from members.models import Member
+from .models import Service, ServiceConfig
+
+from .forms import ServiceConfigForm
+
+@login_required
+def admin_config(request):
+    services = Service.objects.all()
+
+    if request.method == "POST":
+        service_id = request.POST.get('service_id')
+        key = request.POST.get('key')
+        value = request.POST.get('value')
+
+        service = get_object_or_404(Service, id=service_id)
+
+        config, created = ServiceConfig.objects.update_or_create(
+            service=service, key=key,
+            defaults={'value': value}
+        )
+
+        if created:
+            messages.success(request, "Config created successfully.")
+        else:
+            messages.success(request, "Config updated successfully.")
+
+        return redirect('admin_config')
+
+    configs = ServiceConfig.objects.all()
+
+    return render(request, "admin_config.html", {
+        'services': services,
+        'configs': configs
+    })
+
+@login_required
+def admin_import_data(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            data_email_id = data.get('data_email_id', [])
+
+            updated_count = 0
+            for entry in data_email_id:
+                email = entry.get('email')
+                student_id = entry.get('student_id')
+
+                try:
+                    user = Member.objects.get(email=email)
+                    user.student_id = student_id
+                    user.save()
+
+                    updated_count += 1
+                except Member.DoesNotExist:
+                    return JsonResponse({'success': False, 'message': f"User with email {email} not found."})
+
+            return JsonResponse({'success': True, 'message': f'{updated_count} students updated successfully!'})
+
+        except Exception as e:
+            return JsonResponse({'success': False, 'message': f"Error processing the data: {str(e)}"})
+    
+    return render(request, "admin_import_data.html")
 
 @login_required
 def admin_home(request):  
@@ -27,6 +89,9 @@ def admin_dashboard(request):
         {"app": "courses", "model": "Course"},
         {"app": "attendance", "model": "Schedule"},
         {"app": "common", "model": "Room"},
+        {"app": "members", "model": "Report"},
+        {"app": "admin_dashboard", "model": "Service"},
+        {"app": "admin_dashboard", "model": "ServiceConfig"},
     ]
     
     dashboard_data = []

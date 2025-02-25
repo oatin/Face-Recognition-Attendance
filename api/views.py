@@ -1,14 +1,45 @@
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import ValidationError
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from rest_framework import status
 
-from members.models import Member#, Student
+from members.models import Member
 from attendance.models import Attendance, Schedule
 from courses.models import Course, Enrollment
 from devices.models import Device, FaceModel , TrainingImage
+from admin_dashboard.models import ServiceConfig, Service
 
 from .serializers import *
 
+class ServiceViewSet(ModelViewSet):
+    queryset = Service.objects.all()
+    serializer_class = ServiceSerializer
+    permission_classes = [IsAuthenticated]
+
+    @action(detail=True, methods=['get'], url_path='configs')
+    def get_configs(self, request, pk=None):
+        service = self.get_object()
+        configs = service.configs.all()
+        serializer = ServiceConfigSerializer(configs, many=True)
+        return Response(serializer.data)
+
+class ServiceConfigViewSet(ModelViewSet):
+    queryset = ServiceConfig.objects.all()
+    serializer_class = ServiceConfigSerializer
+    permission_classes = [IsAuthenticated]
+
+    @action(detail=False, methods=['get'], url_path='by-service/(?P<service_name>[^/.]+)')
+    def get_by_service(self, request, service_name=None):
+        try:
+            service = Service.objects.get(name=service_name)
+            configs = ServiceConfig.objects.filter(service=service)
+            serializer = self.get_serializer(configs, many=True)
+            return Response(serializer.data)
+        except Service.DoesNotExist:
+            return Response({"error": "Service not found"}, status=status.HTTP_404_NOT_FOUND)
+    
 class TrainingImageViewSet(ModelViewSet):
     queryset = TrainingImage.objects.all().order_by('id')
     serializer_class = TrainingImageSerializer

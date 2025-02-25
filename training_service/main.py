@@ -7,11 +7,13 @@ import json
 import asyncio
 import logging
 from typing import Tuple
+
 from utils.data_loader import DataLoader
 from utils.model import FaceRecognitionModel
+
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
-
+from apscheduler.triggers.interval import IntervalTrigger
 # ตั้งค่า Logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -122,12 +124,54 @@ async def train_all_courses():
         print(f"Training started for course {course_id}")
         await trainer.train_course_model(course_id)
 
-scheduler = BackgroundScheduler()
-scheduler.add_job(
-    lambda: asyncio.run(train_all_courses()), 
-    CronTrigger(hour=18, timezone=tz_bangkok)
-)
-scheduler.start()
+def setup_scheduler():
+    loader = DataLoader(base_url="http://app:8000")
+    loader.authenticate("a", "a")
+    scheduler = BackgroundScheduler(timezone=tz_bangkok)
+
+    last_hour = None
+    last_minute = None
+
+    def update_scheduler():
+        nonlocal last_hour, last_minute 
+        try:
+            config = loader.api_client.make_request(loader.api_client.endpoints.config)
+
+            if not config:
+                print("No config data found. Skipping this cycle.")
+                return
+
+            config_dict = {item['key']: item['value'] for item in config if 'key' in item and 'value' in item}
+
+            hour = int(config_dict.get('hour', 18))
+            minute = int(config_dict.get('minute', 0))
+
+            if hour != last_hour or minute != last_minute:
+                print(f"Updating Scheduler to {hour}:{minute}")
+
+                try:
+                    scheduler.remove_job('train_all_courses_job')
+                except Exception as e:
+                    print("No existing job or error removing job:", e)
+
+                scheduler.add_job(
+                    lambda: asyncio.run(train_all_courses()),
+                    CronTrigger(hour=hour, minute=minute, timezone=tz_bangkok),
+                    id='train_all_courses_job'
+                )
+
+                last_hour = hour
+                last_minute = minute
+
+        except Exception as e:
+            print(f"Error in update_scheduler: {e}")
+
+    scheduler.add_job(update_scheduler, IntervalTrigger(minutes=1))
+
+    scheduler.start()
+    print("Scheduler started and will check for config updates every 1 minute.")
+
+setup_scheduler()
 
 @app.post("/train/{course_id}")
 async def trigger_training(course_id: int, background_tasks: BackgroundTasks):

@@ -10,6 +10,8 @@ class APIEndpoints:
     face_model: str
     schedule: str
     device: str
+    course: str
+    config: str
 
     @classmethod
     def from_base_url(cls, base_url: str) -> 'APIEndpoints':
@@ -20,7 +22,9 @@ class APIEndpoints:
             training_image=f"{base}/api/TrainingImageViewSet/",
             face_model=f"{base}/api/FaceModel/",
             schedule=f"{base}/api/Schedule/",
-            device=f"{base}/api/device/"
+            device=f"{base}/api/device/",
+            course=f"{base}/api/courses/",
+            config=f"{base}/api/service-configs/by-service/Training/"
         )
 
 class APIClient:

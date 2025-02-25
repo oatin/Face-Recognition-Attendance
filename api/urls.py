@@ -14,6 +14,8 @@ router.register(r"Schedule", ScheduleViewSet)
 router.register(r"Enrollment", EnrollmentViewSet)
 router.register(r"FaceModel", FaceModelViewSet)
 router.register(r"TrainingImageViewSet", TrainingImageViewSet)
+router.register(r'services', ServiceViewSet, basename='services')
+router.register(r'service-configs', ServiceConfigViewSet, basename='service-configs')
 
 urlpatterns = [
     path('', include(router.urls)),

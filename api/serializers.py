@@ -1,8 +1,19 @@
 from rest_framework import serializers
-from members.models import Member#, Student
+from members.models import Member
 from attendance.models import Attendance, Schedule
 from courses.models import Course, Enrollment
 from devices.models import Device, FaceModel, TrainingImage
+from admin_dashboard.models import ServiceConfig, Service
+
+class ServiceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Service
+        fields = '__all__'
+
+class ServiceConfigSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ServiceConfig
+        fields = '__all__'
 
 class TrainingImageSerializer(serializers.ModelSerializer):
     class Meta:

@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard{% endblock %}
+{% block menu %}
+<div class="flex flex-col flex-1 space-y-4">
+    <a href="{% url 'home' %}" class="p-3 rounded-lg hover:bg-purple-100">
+        <svg width="32px" height="32px" viewBox="0 -0.5 21 21" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" fill="#000000"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <title>menu_navigation_grid [#1529]</title> <desc>Created with Sketch.</desc> <defs> </defs> <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"> <g id="Dribbble-Light-Preview" transform="translate(-99.000000, -200.000000)" fill="#000000"> <g id="icons" transform="translate(56.000000, 160.000000)"> <path d="M60.85,51 L57.7,51 C55.96015,51 54.55,52.343 54.55,54 L54.55,57 C54.55,58.657 55.96015,60 57.7,60 L60.85,60 C62.58985,60 64,58.657 64,57 L64,54 C64,52.343 62.58985,51 60.85,51 M49.3,51 L46.15,51 C44.41015,51 43,52.343 43,54 L43,57 C43,58.657 44.41015,60 46.15,60 L49.3,60 C51.03985,60 52.45,58.657 52.45,57 L52.45,54 C52.45,52.343 51.03985,51 49.3,51 M60.85,40 L57.7,40 C55.96015,40 54.55,41.343 54.55,43 L54.55,46 C54.55,47.657 55.96015,49 57.7,49 L60.85,49 C62.58985,49 64,47.657 64,46 L64,43 C64,41.343 62.58985,40 60.85,40 M52.45,43 L52.45,46 C52.45,47.657 51.03985,49 49.3,49 L46.15,49 C44.41015,49 43,47.657 43,46 L43,43 C43,41.343 44.41015,40 46.15,40 L49.3,40 C51.03985,40 52.45,41.343 52.45,43" id="menu_navigation_grid-[#1529]"> </path> </g> </g> </g> </g></svg>
+    </a>
+    <a href="{% url 'admin_members' %}" class="p-3 rounded-lg hover:bg-purple-100">
+        <svg fill="#000000" width="32px" height="32px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <title>member-card</title> <path d="M0 26.016q0 0.832 0.576 1.408t1.44 0.576h5.984v-1.984h-0.992q-0.416 0-0.704-0.288t-0.288-0.704 0.288-0.704 0.704-0.32h4q0.384 0 0.704 0.32t0.288 0.704-0.288 0.704-0.704 0.288h-0.992v1.984h12v-1.984h-1.024q-0.384 0-0.704-0.288t-0.288-0.704 0.288-0.704 0.704-0.32h4q0.416 0 0.704 0.32t0.32 0.704-0.32 0.704-0.704 0.288h-0.992v1.984h6.016q0.8 0 1.408-0.576t0.576-1.408v-20q0-0.832-0.576-1.408t-1.408-0.608h-28q-0.832 0-1.44 0.608t-0.576 1.408v20zM4 22.016v-14.016h14.016v14.016h-14.016zM7.040 20h7.936q-1.12-1.472-2.976-1.856v-0.32q0.896-0.352 1.44-1.088t0.576-1.728v-1.984q0-1.248-0.896-2.144t-2.112-0.864-2.144 0.864-0.864 2.144v1.984q0 0.96 0.544 1.728t1.472 1.088v0.32q-1.856 0.384-2.976 1.856zM20 22.016v-2.016h2.016v2.016h-2.016zM20 18.016v-2.016h10.016v2.016h-10.016zM20 14.016v-2.016h4v2.016h-4zM20 10.016v-2.016h6.016v2.016h-6.016zM26.016 14.016v-2.016h4v2.016h-4zM28 10.016v-2.016h2.016v2.016h-2.016z"></path> </g></svg>    
+    </a>
+    <a href="{% url 'admin_import_data' %}" class="p-3 rounded-lg hover:bg-purple-100">
+        <svg width="32px" height="32px" viewBox="0 0 1024 1024" class="icon" version="1.1" xmlns="http://www.w3.org/2000/svg" fill="#000000"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><path d="M978.578286 900.461714l-108.617143-108.617143c30.134857-39.570286 48.274286-88.795429 48.274286-142.189714a235.739429 235.739429 0 0 0-235.52-235.373714 235.739429 235.739429 0 0 0-235.373715 235.373714 235.739429 235.739429 0 0 0 235.446857 235.52c53.467429 0 102.692571-18.139429 142.189715-48.274286l108.617143 108.544a31.524571 31.524571 0 0 0 44.836571 0 31.744 31.744 0 0 0 0.146286-44.982857zM510.902857 649.654857a172.105143 172.105143 0 0 1 171.885714-171.885714 171.885714 171.885714 0 0 1 0 343.771428 172.178286 172.178286 0 0 1-171.885714-171.885714z m270.262857-378.514286c0 17.554286-14.262857 31.744-31.817143 31.744H431.396571a31.744 31.744 0 0 1 0-63.488h317.952c17.554286 0 31.817143 14.189714 31.817143 31.744z m-609.426285 620.032h211.968a31.890286 31.890286 0 0 1 0 63.634286H171.739429c-58.368 0-106.057143-47.542857-106.057143-106.057143V283.062857c0-14.262857 5.12-28.086857 14.262857-39.058286L240.420571 53.101714a57.417143 57.417143 0 0 1 43.885715-20.48h517.997714c58.441143 0 106.057143 47.542857 106.057143 106.057143V366.445714a31.744 31.744 0 0 1-63.634286 0V138.605714a42.422857 42.422857 0 0 0-42.276571-42.349714H336.018286V280.137143a50.688 50.688 0 0 1-50.980572 50.176H129.389714v518.509714c0 23.332571 19.017143 42.349714 42.349715 42.349714zM272.457143 113.810286l-128.512 152.868571h128.512v-152.868571z m79.506286 476.16a31.744 31.744 0 0 0 0-63.634286H240.64a31.744 31.744 0 0 0 0 63.634286h111.323429z m0 146.066285a31.744 31.744 0 0 0 0-63.561142H240.64a31.744 31.744 0 0 0 0 63.561142h111.323429z m31.744-353.206857H240.64a31.744 31.744 0 0 0 0 63.561143h143.067429a31.744 31.744 0 0 0 0-63.561143z" fill="#000000"></path></g></svg>    
+    </a>
+    <a href="{% url 'admin_config' %}" class="p-3 rounded-lg hover:bg-purple-100">
+      <svg fill="#000000" width="32px" height="32px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M31.449 6.748c-0.337-0.155-0.737-0.096-1.017 0.152l-5.041 4.528-4.551-4.669 4.506-5.204c0.245-0.283 0.305-0.673 0.152-1.016s-0.489-0.553-0.86-0.553h-0.271c-2.785 0-7.593 0.239-9.739 2.417l-0.433 0.43c-2.29 2.337-2.697 6.168-1.49 9.081l-11.54 11.778c-1.556 1.578-1.556 4.135 0 5.713l1.409 1.428c0.778 0.788 1.798 1.183 2.818 1.183s2.040-0.395 2.817-1.183l11.71-11.804c1.107 0.599 2.625 0.989 3.899 0.989 2.043 0 3.98-0.824 5.454-2.32l0.427-0.433c2.331-2.364 2.296-7.416 2.306-9.638 0.001-0.378-0.216-0.721-0.554-0.878zM28.302 15.906l-0.371 0.433c-1.117 1.134-2.578 1.677-4.114 1.677-0.76 0-1.784-0.143-2.476-0.431-0.625-0.259-1.206-0.634-1.725-1.107l-12.818 12.925c-0.376 0.382-0.876 0.592-1.408 0.592s-1.032-0.21-1.409-0.592l-1.408-1.427c-0.777-0.788-0.777-2.070-0.001-2.857l12.524-12.777c-0.42-0.611-0.706-1.278-0.877-1.968h-0.001c-0.482-1.95-0.201-4.644 1.313-6.189l0.431-0.435c1.298-1.317 4.67-1.707 6.537-1.822l-3.668 4.236c-0.328 0.379-0.311 0.95 0.038 1.309l5.798 5.948c0.352 0.362 0.92 0.383 1.299 0.047l4.082-3.676c-0.122 1.98-0.506 4.856-1.748 6.115z"></path> </g></svg>    
+    </a>
+    <a href="{% url 'admin_dashboard' %}" class="p-3 rounded-lg hover:bg-purple-100">
+        <svg width="32px" height="32px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g id="System / Data"> <path id="Vector" d="M18 12V17C18 18.6569 15.3137 20 12 20C8.68629 20 6 18.6569 6 17V12M18 12V7M18 12C18 13.6569 15.3137 15 12 15C8.68629 15 6 13.6569 6 12M18 7C18 5.34315 15.3137 4 12 4C8.68629 4 6 5.34315 6 7M18 7C18 8.65685 15.3137 10 12 10C8.68629 10 6 8.65685 6 7M6 12V7" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g> </g></svg>
+    </a>
+</div>
+{% endblock %}
+{% block content %}
+<div class="flex flex-col px-8 py-4 mx-5 bg-white shadow-sm">
+    <div class="lg:flex mb-6">
+        <p class="text-2xl font-semibold mb-2 lg:mb-0">Dashboard</p>
+    </div>
+
+    <nav class="text-sm font-semibold mb-6" aria-label="Breadcrumb">
+        <ol class="list-none p-0 inline-flex">
+          <li class="flex items-center text-blue-500">
+            <a href="{% url 'home' %}" class="text-gray-700">Dashboard</a>
+            <svg class="fill-current w-3 h-3 mx-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M285.476 272.971L91.132 467.314c-9.373 9.373-24.569 9.373-33.941 0l-22.667-22.667c-9.357-9.357-9.375-24.522-.04-33.901L188.505 256 34.484 101.255c-9.335-9.379-9.317-24.544.04-33.901l22.667-22.667c9.373-9.373 24.569-9.373 33.941 0L285.475 239.03c9.373 9.372 9.373 24.568.001 33.941z"/></svg>
+          </li>
+          <li class="flex items-center">
+            <a href="{% url 'admin_import_data' %}" class="text-gray-600">Import Student ID</a>
+          </li>
+        </ol>
+    </nav>
+
+    <div class="max-w-4xl mx-auto p-6 bg-white rounded-lg">
+      <h1 class="text-3xl font-bold mb-6 text-gray-800 text-center">Upload File CSV</h1>
+  
+      <input
+          type="file"
+          id="csvFileInput"
+          accept=".csv"
+          class="block w-full text-sm text-gray-600 file:mr-4 file:py-3 file:px-6 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-100 file:text-blue-700 hover:file:bg-blue-200 transition-colors duration-300 mb-6"
+      />
+  
+      <div id="columnSelection" class="hidden mb-6 bg-gray-50 p-4 rounded-lg border border-gray-200">
+          <h2 class="text-lg font-semibold text-gray-700 mb-4">Select Columns</h2>
+  
+          <label for="emailColumn" class="block text-sm font-medium text-gray-700 mb-1">Select Email Column</label>
+          <select id="emailColumn" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm mb-4">
+          </select>
+  
+          <label for="studentidColumn" class="block text-sm font-medium text-gray-700 mb-1">Select Student ID Column</label>
+          <select id="studentidColumn" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></select>
+  
+          <button id="confirmSelection" class="mt-6 w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition-colors duration-300 shadow-md">
+            Done
+          </button>
+      </div>
+  
+      <div class="overflow-x-auto border border-gray-200 rounded-lg shadow-sm">
+          <table id="csvTable" class="min-w-full bg-white text-sm text-gray-700">
+              <!-- Table content will go here -->
+          </table>
+      </div>
+  </div>  
+</div>
+{% endblock %}
+{% block script %}
+document.getElementById('csvFileInput').addEventListener('change', function(event) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const text = e.target.result;
+        const rows = text.split('\n');
+        const headers = rows[0].split(',').map(header => header.trim());
+  
+        // แสดงตาราง CSV
+        let table = '';
+        rows.forEach((row, index) => {
+          const cells = row.split(',');
+          table += '<tr class="' + (index === 0 ? 'bg-gray-50' : 'hover:bg-gray-50') + '">';
+          cells.forEach(cell => {
+            if (index === 0) {
+              table += `<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">${cell}</th>`;
+            } else {
+              table += `<td class="px-6 py-4 text-sm text-gray-700">${cell}</td>`;
+            }
+          });
+          table += '</tr>';
+        });
+        document.getElementById('csvTable').innerHTML = table;
+  
+        // แสดงตัวเลือกคอลัมน์
+        const columnSelection = document.getElementById('columnSelection');
+        const emailColumnSelect = document.getElementById('emailColumn');
+        emailColumnSelect.innerHTML = headers.map(header => `<option value="${header}">${header}</option>`).join('');
+
+        const studentidColumnSelect = document.getElementById('studentidColumn');
+        studentidColumnSelect.innerHTML = headers.map(header => `<option value="${header}">${header}</option>`).join('');
+        
+        columnSelection.classList.remove('hidden');
+      };
+      reader.readAsText(file);
+    }
+});
+  
+document.getElementById('confirmSelection').addEventListener('click', function(event) {
+    event.preventDefault(); // ยับยั้งการรีเฟรชหน้าเมื่อกดปุ่ม
+    const emailColumn = document.getElementById('emailColumn').value;
+    const studentidColumn = document.getElementById('studentidColumn').value;
+
+    const file = document.getElementById('csvFileInput').files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const text = e.target.result;
+        const rows = text.split('\n');
+        const headers = rows[0].split(',').map(header => header.trim());
+
+        const emailIndex = headers.indexOf(emailColumn);
+        const studentidIndex = headers.indexOf(studentidColumn);
+        const data_email_id = [];
+        rows.slice(1).forEach(row => {
+          const cells = row.split(',');
+          const email = cells[emailIndex];
+          const student_id = cells[studentidIndex];
+
+          if (email && student_id) {
+            data_email_id.push({ email, student_id });
+          }
+        });
+
+        fetch('{% url "admin_import_data" %}', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}',
+          },
+          body: JSON.stringify({ data_email_id }),
+        })
+          .then(response => response.json())
+          .then(data => {
+            console.log('Success:', data);
+            if (data.success) {
+                alert('Import student id สำเร็จ!');
+            } else {
+                alert('เกิดข้อผิดพลาด: ' + data.message);
+            }
+          })
+          .catch((error) => {
+            console.error('Error:', error);
+            alert('เกิดข้อผิดพลาดในการสร้าง Import student id');
+          });
+      };
+      reader.readAsText(file);
+    }
+});
+
+{% endblock %}
