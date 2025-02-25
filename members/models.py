@@ -2,9 +2,9 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 class MembersRoleEnum(models.TextChoices):
-    STUDENT = "student"
-    TEACHER = "teacher"
-    ADMIN = "admin"
+    STUDENT = "STUDENT", "student"
+    TEACHER = "TEACHER", "teacher"
+    ADMIN = "ADMIN", "admin"
 
 
 class NotificationsStatusEnum(models.TextChoices):

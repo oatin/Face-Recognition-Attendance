@@ -12,7 +12,9 @@ from members.models import Member
 from .models import Service, ServiceConfig
 
 from .forms import ServiceConfigForm
+from common.decorators import role_required
 
+@role_required(allowed_roles=['admin'])
 @login_required
 def admin_config(request):
     services = Service.objects.all()
@@ -43,6 +45,8 @@ def admin_config(request):
         'configs': configs
     })
 
+
+@role_required(allowed_roles=['admin'])
 @login_required
 def admin_import_data(request):
     if request.method == "POST":
@@ -71,6 +75,7 @@ def admin_import_data(request):
     
     return render(request, "admin_import_data.html")
 
+@role_required(allowed_roles=['admin'])
 @login_required
 def admin_home(request):  
     all_members = Member.objects.all()
@@ -81,6 +86,7 @@ def admin_home(request):
     
     return render(request, "admin_member.html", context)
 
+@role_required(allowed_roles=['admin'])
 @login_required
 def admin_dashboard(request):
     selected_models = [
@@ -111,6 +117,7 @@ def admin_dashboard(request):
     return render(request, "admin_dashboard.html", {"dashboard_data": dashboard_data})
 
 
+@role_required(allowed_roles=['admin'])
 @login_required
 def get_model_data(request, app_label, model_name):
     try:
@@ -128,6 +135,7 @@ class CustomJSONEncoder(DjangoJSONEncoder):
             return obj.url
         return super().default(obj)
 
+@role_required(allowed_roles=['admin'])
 @login_required
 def update_model_data(request, app_label, model_name, obj_id):
     try:
@@ -155,6 +163,7 @@ def update_model_data(request, app_label, model_name, obj_id):
     return JsonResponse({"success": False}, status=400)
 
 
+@role_required(allowed_roles=['admin'])
 @login_required
 def delete_model_data(request, app_label, model_name, obj_id):
     try:
@@ -166,6 +175,7 @@ def delete_model_data(request, app_label, model_name, obj_id):
         return JsonResponse({"error": "Model not found"}, status=400)
 
 
+@role_required(allowed_roles=['admin'])
 @login_required
 def add_model_data(request, app_label, model_name):
     try:

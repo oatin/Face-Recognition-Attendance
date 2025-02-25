@@ -15,4 +15,5 @@ urlpatterns = [
     path("get-member-detail/<int:member_id>/", views.get_member_detail, name="get_member_detail"),
     path('validate-face-poses/', views.validate_face_poses, name='validate_face_poses'),
     path('save-training-images/', views.save_training_images, name='save_training_images'),
+    path('no_permission/', views.no_permission, name="no_permission"), 
 ]
