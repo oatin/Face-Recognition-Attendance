@@ -7,6 +7,8 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
 import json
 from django.contrib import messages
+from django.contrib.admin.sites import site
+from django.forms import modelform_factory
 
 from members.models import Member
 from .models import Service, ServiceConfig
@@ -86,111 +88,74 @@ def admin_home(request):
     
     return render(request, "admin_member.html", context)
 
+MODEL_LIST = {
+    "Member": apps.get_model("members", "Member"),
+    "Report": apps.get_model("members", "Report"),
+    "Notification": apps.get_model("members", "Notification"),
+    "Room": apps.get_model("common", "Room"),
+    "Courses": apps.get_model("courses", "Course"),
+    "Enrollment": apps.get_model("courses", "Enrollment"),
+    "Schedule": apps.get_model("attendance", "Schedule"),
+    "Attendance": apps.get_model("attendance", "Attendance"),
+    "Device": apps.get_model("devices", "Device"),
+    "TrainingImage": apps.get_model("devices", "TrainingImage"),
+    "FaceModel": apps.get_model("devices", "FaceModel"),
+    "FaceScanLog": apps.get_model("devices", "FaceScanLog"),
+    "Service": apps.get_model("admin_dashboard", "Service"),
+    "ServiceConfig": apps.get_model("admin_dashboard", "ServiceConfig"),
+}
+
 @role_required(allowed_roles=['admin'])
 @login_required
 def admin_dashboard(request):
-    selected_models = [
-        {"app": "members", "model": "Member"},
-        {"app": "devices", "model": "Device"},
-        {"app": "courses", "model": "Course"},
-        {"app": "attendance", "model": "Schedule"},
-        {"app": "common", "model": "Room"},
-        {"app": "members", "model": "Report"},
-        {"app": "admin_dashboard", "model": "Service"},
-        {"app": "admin_dashboard", "model": "ServiceConfig"},
-    ]
+    model_data = {}
     
-    dashboard_data = []
+    for model_name, ModelClass in MODEL_LIST.items():
+        FormClass = modelform_factory(ModelClass, fields="__all__")
+        objects = ModelClass.objects.all()
+        model_data[model_name] = {
+            "objects": objects,
+            "form": FormClass(),
+        }
+
+    return render(request, "admin_dashboard.html", {"model_data": model_data})
+
+def add_model(request, model_name):
+    if model_name not in MODEL_LIST:
+        return redirect("admin_dashboard")
+
+    ModelClass = MODEL_LIST[model_name]
+    FormClass = modelform_factory(ModelClass, fields="__all__")
+
+    if request.method == "POST":
+        form = FormClass(request.POST)
+        if form.is_valid():
+            form.save()
     
-    for item in selected_models:
-        try:
-            model = apps.get_model(item["app"], item["model"])
-            dashboard_data.append({
-                "name": item["model"],
-                "model": item["model"].lower(),
-                "app_label": item["app"],
-                "count": model.objects.count()
-            })
-        except LookupError:
-            continue  
+    return redirect("admin_dashboard")
 
-    return render(request, "admin_dashboard.html", {"dashboard_data": dashboard_data})
+def edit_model(request, model_name, pk):
+    if model_name not in MODEL_LIST:
+        return redirect("admin_dashboard")
 
+    ModelClass = MODEL_LIST[model_name]
+    obj = get_object_or_404(ModelClass, pk=pk)
+    FormClass = modelform_factory(ModelClass, fields="__all__")
 
-@role_required(allowed_roles=['admin'])
-@login_required
-def get_model_data(request, app_label, model_name):
-    try:
-        model = apps.get_model(app_label, model_name.capitalize())
-        data = list(model.objects.values())
-        
-        return JsonResponse({"app": app_label, "model": model_name, "data": data})
-    except LookupError:
-        return JsonResponse({"error": "Model not found"}, status=400)
+    if request.method == "POST":
+        form = FormClass(request.POST, instance=obj)
+        if form.is_valid():
+            form.save()
+            return redirect("admin_dashboard")
 
+    return redirect("admin_dashboard")
 
-class CustomJSONEncoder(DjangoJSONEncoder):
-    def default(self, obj):
-        if hasattr(obj, 'url'):  
-            return obj.url
-        return super().default(obj)
+def delete_model(request, model_name, pk):
+    if model_name not in MODEL_LIST:
+        return redirect("admin_dashboard")
 
-@role_required(allowed_roles=['admin'])
-@login_required
-def update_model_data(request, app_label, model_name, obj_id):
-    try:
-        model = apps.get_model(app_label, model_name.capitalize())
-        obj = get_object_or_404(model, id=obj_id)
-
-        if request.method == "POST":
-            for key, value in request.POST.items():
-                if key in [field.name for field in model._meta.fields]:  
-                    setattr(obj, key, value)
-
-            obj.save()
-
-            updated_data = model_to_dict(obj)
-            
-            for field in model._meta.fields:
-                if isinstance(field, models.ImageField) or isinstance(field, models.FileField):
-                    updated_data[field.name] = getattr(obj, field.name).url if getattr(obj, field.name) else None
-
-            return JsonResponse({"success": True, "updated_data": updated_data}, encoder=CustomJSONEncoder)
-
-    except LookupError:
-        return JsonResponse({"error": "Model not found"}, status=400)
-
-    return JsonResponse({"success": False}, status=400)
-
-
-@role_required(allowed_roles=['admin'])
-@login_required
-def delete_model_data(request, app_label, model_name, obj_id):
-    try:
-        model = apps.get_model(app_label, model_name.capitalize())
-        obj = get_object_or_404(model, id=obj_id)
-        obj.delete()
-        return JsonResponse({"success": True})
-    except LookupError:
-        return JsonResponse({"error": "Model not found"}, status=400)
-
-
-@role_required(allowed_roles=['admin'])
-@login_required
-def add_model_data(request, app_label, model_name):
-    try:
-        model = apps.get_model(app_label, model_name.capitalize())
-
-        if request.method == "POST":
-            valid_data = {
-                key: value for key, value in request.POST.items()
-                if key in [field.name for field in model._meta.fields] and key not in ["id", "csrfmiddlewaretoken"]
-            }
-
-            new_object = model.objects.create(**valid_data)  
-            return JsonResponse({"success": True, "new_data": model_to_dict(new_object)})
-
-    except LookupError:
-        return JsonResponse({"error": "Model not found"}, status=400)
-
-    return JsonResponse({"success": False}, status=400)
+    ModelClass = MODEL_LIST[model_name]
+    obj = get_object_or_404(ModelClass, pk=pk)
+    obj.delete()
+    
+    return redirect("admin_dashboard")

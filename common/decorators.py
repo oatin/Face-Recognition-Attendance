@@ -9,7 +9,6 @@ def role_required(allowed_roles=[]):
                 return redirect('login')
 
             user_role = getattr(request.user, 'role', None)
-            print(user_role)
 
             if user_role not in allowed_roles:
                 return redirect('no_permission') 
