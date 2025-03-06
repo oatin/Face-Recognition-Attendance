@@ -1,10 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.apps import apps
-from django.forms.models import model_to_dict
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
-from django.core.serializers.json import DjangoJSONEncoder
-from django.db import models
 import json
 from django.contrib import messages
 from django.contrib.admin.sites import site
@@ -13,8 +10,8 @@ from django.forms import modelform_factory
 from members.models import Member
 from .models import Service, ServiceConfig
 
-from .forms import ServiceConfigForm
 from common.decorators import role_required
+from django.views.decorators.csrf import csrf_exempt
 
 @role_required(allowed_roles=['admin'])
 @login_required
@@ -76,6 +73,26 @@ def admin_import_data(request):
             return JsonResponse({'success': False, 'message': f"Error processing the data: {str(e)}"})
     
     return render(request, "admin_import_data.html")
+
+@csrf_exempt
+def update_user(request):
+    if request.method == "POST":
+        user_id = request.POST.get("user_id")
+        first_name = request.POST.get("first_name")
+        last_name = request.POST.get("last_name")
+        email = request.POST.get("email")
+        role = request.POST.get("role")
+
+        user = get_object_or_404(Member, id=user_id)
+        user.first_name = first_name
+        user.last_name = last_name
+        user.email = email
+        user.role = role
+        user.save()
+
+        return JsonResponse({"success": True})
+    
+    return JsonResponse({"success": False})
 
 @role_required(allowed_roles=['admin'])
 @login_required

@@ -4,6 +4,8 @@ from . import views
 
 urlpatterns = [
     path('', views.admin_home, name="admin_members"),
+    path("update-user/", views.update_user, name="update_user"),
+
     path("admin-import-data/", views.admin_import_data, name="admin_import_data"),
     path("admin-config/", views.admin_config, name="admin_config"),
 

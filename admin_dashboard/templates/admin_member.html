@@ -102,18 +102,81 @@
             <!-- เนื้อหาถูกโหลดด้วย JavaScript -->
         </div>
 
-        <!-- Close Button -->
-        <div class="flex justify-end mt-6">
+        <!-- เพิ่มปุ่ม Edit ใน Modal -->
+        <div class="flex justify-end space-x-3 mt-6">
+            <button id="editUserBtn" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+                Edit
+            </button>
             <button id="closeModalBtn" class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600">
                 Close
             </button>
         </div>
+
+    </div>
+</div>
+<!-- User Edit Modal -->
+<div id="editUserModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg relative">
+        <!-- Header -->
+        <div class="flex justify-between items-center border-b pb-3">
+            <h2 class="text-xl font-semibold text-gray-800">Edit User</h2>
+            <button id="closeEditModal" class="text-gray-600 hover:text-gray-900">
+                <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M16 8L8 16M8.00001 8L16 16M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" 
+                          stroke="#000000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Edit Form -->
+        <form id="editUserForm">
+            {% csrf_token %}
+            <input type="hidden" id="editUserId" name="user_id">
+            
+            <div class="mt-4 space-y-4">
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">First Name</label>
+                    <input type="text" id="editFirstName" name="first_name"
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">Last Name</label>
+                    <input type="text" id="editLastName" name="last_name"
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">Email</label>
+                    <input type="email" id="editEmail" name="email"
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">Role</label>
+                    <select id="editRole" name="role"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <option value="admin">Admin</option>
+                        <option value="teacher">Teacher</option>
+                        <option value="student">Student</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="mt-6 flex justify-end space-x-3">
+                <button type="submit" class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600">
+                    Save Changes
+                </button>
+                <button id="closeEditModalBtn" type="button" class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600">
+                    Cancel
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 
 {% endblock %}
 {% block script %}
 document.addEventListener("DOMContentLoaded", function() {
+    // ค้นหาสมาชิกด้วย Input Search
     document.getElementById("searchInput").addEventListener("input", function() {
         let query = this.value.toLowerCase();
         document.querySelectorAll(".member-card").forEach(card => {
@@ -122,6 +185,7 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 
+    // กรองสมาชิกตาม Role
     document.getElementById("filterRole").addEventListener("change", function() {
         let selectedRole = this.value;
         document.querySelectorAll(".member-card").forEach(card => {
@@ -130,16 +194,22 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 
+    // โหลดข้อมูลสมาชิกเข้า Modal
     document.querySelectorAll(".open-modal").forEach(button => {
         button.addEventListener("click", function() {
-            let url = this.getAttribute("data-url"); // ดึง URL ของ User
-    
+            let url = this.getAttribute("data-url");
+
             fetch(url)
                 .then(response => response.json())
                 .then(data => {
                     document.getElementById("userAvatar").src = data.userAvatar;
                     document.getElementById("userFullName").textContent = `${data.first_name} ${data.last_name}`;
                     document.getElementById("userRole").textContent = data.role;
+
+                    // ✅ เพิ่มค่า `data-user-id` ให้ userFullName เพื่อให้ Edit ใช้
+                    console.log(data);
+                    document.getElementById("userFullName").setAttribute("data-user-id", data.id);
+                    document.getElementById("userRole").setAttribute("data-user-email", data.email);
 
                     document.getElementById("userDetailContent").innerHTML = `
                         <div class="grid grid-cols-2 gap-4">
@@ -157,6 +227,7 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 
+    // ปิด User Modal
     document.getElementById("closeModal").addEventListener("click", function() {
         document.getElementById("userModal").classList.add("hidden");
     });
@@ -164,5 +235,57 @@ document.addEventListener("DOMContentLoaded", function() {
     document.getElementById("closeModalBtn").addEventListener("click", function() {
         document.getElementById("userModal").classList.add("hidden");
     });
+
+    // 🔹 **เริ่มต้นระบบแก้ไขข้อมูล**
+    let editUserBtn = document.getElementById("editUserBtn");
+    let editUserModal = document.getElementById("editUserModal");
+    let closeEditModal = document.getElementById("closeEditModal");
+    let closeEditModalBtn = document.getElementById("closeEditModalBtn");
+
+    // เปิด Edit Modal และโหลดข้อมูล User
+    editUserBtn.addEventListener("click", function() {
+        let userId = document.getElementById("userFullName").getAttribute("data-user-id");
+        let firstName = document.getElementById("userFullName").innerText.split(" ")[0];
+        let lastName = document.getElementById("userFullName").innerText.split(" ")[1];
+        let email = document.getElementById("userRole").getAttribute("data-user-email");
+        let role = document.getElementById("userRole").innerText;
+
+        document.getElementById("editUserId").value = userId;
+        document.getElementById("editFirstName").value = firstName;
+        document.getElementById("editLastName").value = lastName;
+        document.getElementById("editEmail").value = email;
+        document.getElementById("editRole").value = role;
+
+        editUserModal.classList.remove("hidden");
+    });
+
+    // ปิด Edit Modal
+    closeEditModal.addEventListener("click", function() {
+        editUserModal.classList.add("hidden");
+    });
+
+    closeEditModalBtn.addEventListener("click", function() {
+        editUserModal.classList.add("hidden");
+    });
+
+    // ✅ ส่งข้อมูลฟอร์มแก้ไข User
+    document.getElementById("editUserForm").addEventListener("submit", function(e) {
+        e.preventDefault();
+
+        let formData = new FormData(this);
+        
+        fetch("{% url 'update_user' %}", {
+            method: "POST",
+            body: formData
+        }).then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload(); // รีเฟรชหน้าหลังแก้ไขสำเร็จ
+            } else {
+                alert("Failed to update user.");
+            }
+        });
+    });
 });
+
 {% endblock %}

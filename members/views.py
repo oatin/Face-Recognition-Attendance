@@ -47,6 +47,7 @@ def get_member_detail(request, member_id):
     member = get_object_or_404(Member, id=member_id)
     
     data = {
+        "id": member.id,
         "first_name": member.first_name,
         "last_name": member.last_name,
         "email": member.email,
