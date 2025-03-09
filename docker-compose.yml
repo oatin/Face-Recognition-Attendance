@@ -11,6 +11,8 @@ services:
       - db
     environment:
       - DATABASE_URL=postgres://admin:a@db:5432/db_face_scan
+    networks:
+      - face_network
 
   db:
     image: postgres:15
@@ -24,6 +26,8 @@ services:
       POSTGRES_DB: db_face_scan
       LANG: en_US.UTF-8
       LC_ALL: en_US.UTF-8
+    networks:
+      - face_network
 
   training_service:
     build:
@@ -39,6 +43,12 @@ services:
     depends_on:
       - db
       - app
+    networks:
+      - face_network
 
 volumes:
   db_data:
+
+networks:
+  face_network:
+    driver: bridge

@@ -312,6 +312,7 @@ def home(request):
         return render(request, "admin_home.html", context)
     else:
         return HttpResponse("Unauthorized access")
+    
 @login_required
 def profile(request):
     if request.method == "POST":

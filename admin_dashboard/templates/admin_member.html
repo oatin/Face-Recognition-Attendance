@@ -176,7 +176,6 @@
 {% endblock %}
 {% block script %}
 document.addEventListener("DOMContentLoaded", function() {
-    // ค้นหาสมาชิกด้วย Input Search
     document.getElementById("searchInput").addEventListener("input", function() {
         let query = this.value.toLowerCase();
         document.querySelectorAll(".member-card").forEach(card => {
@@ -185,7 +184,6 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 
-    // กรองสมาชิกตาม Role
     document.getElementById("filterRole").addEventListener("change", function() {
         let selectedRole = this.value;
         document.querySelectorAll(".member-card").forEach(card => {
@@ -194,7 +192,6 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 
-    // โหลดข้อมูลสมาชิกเข้า Modal
     document.querySelectorAll(".open-modal").forEach(button => {
         button.addEventListener("click", function() {
             let url = this.getAttribute("data-url");
@@ -206,8 +203,6 @@ document.addEventListener("DOMContentLoaded", function() {
                     document.getElementById("userFullName").textContent = `${data.first_name} ${data.last_name}`;
                     document.getElementById("userRole").textContent = data.role;
 
-                    // ✅ เพิ่มค่า `data-user-id` ให้ userFullName เพื่อให้ Edit ใช้
-                    console.log(data);
                     document.getElementById("userFullName").setAttribute("data-user-id", data.id);
                     document.getElementById("userRole").setAttribute("data-user-email", data.email);
 
@@ -227,7 +222,6 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 
-    // ปิด User Modal
     document.getElementById("closeModal").addEventListener("click", function() {
         document.getElementById("userModal").classList.add("hidden");
     });
@@ -236,13 +230,11 @@ document.addEventListener("DOMContentLoaded", function() {
         document.getElementById("userModal").classList.add("hidden");
     });
 
-    // 🔹 **เริ่มต้นระบบแก้ไขข้อมูล**
     let editUserBtn = document.getElementById("editUserBtn");
     let editUserModal = document.getElementById("editUserModal");
     let closeEditModal = document.getElementById("closeEditModal");
     let closeEditModalBtn = document.getElementById("closeEditModalBtn");
 
-    // เปิด Edit Modal และโหลดข้อมูล User
     editUserBtn.addEventListener("click", function() {
         let userId = document.getElementById("userFullName").getAttribute("data-user-id");
         let firstName = document.getElementById("userFullName").innerText.split(" ")[0];
@@ -259,7 +251,6 @@ document.addEventListener("DOMContentLoaded", function() {
         editUserModal.classList.remove("hidden");
     });
 
-    // ปิด Edit Modal
     closeEditModal.addEventListener("click", function() {
         editUserModal.classList.add("hidden");
     });
@@ -268,7 +259,6 @@ document.addEventListener("DOMContentLoaded", function() {
         editUserModal.classList.add("hidden");
     });
 
-    // ✅ ส่งข้อมูลฟอร์มแก้ไข User
     document.getElementById("editUserForm").addEventListener("submit", function(e) {
         e.preventDefault();
 
@@ -280,7 +270,7 @@ document.addEventListener("DOMContentLoaded", function() {
         }).then(response => response.json())
         .then(data => {
             if (data.success) {
-                location.reload(); // รีเฟรชหน้าหลังแก้ไขสำเร็จ
+                location.reload();
             } else {
                 alert("Failed to update user.");
             }
