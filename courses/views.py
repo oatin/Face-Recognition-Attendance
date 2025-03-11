@@ -145,8 +145,13 @@ def course_detail(request, course_id):
         attendances = Attendance.objects.filter(course=course, date=today)
         schedules = Schedule.objects.filter(course=course) 
         enrollments = Enrollment.objects.filter(course=course_id)
-        
+
         if request.method == 'POST':
+            if 'delete_course' in request.POST:  
+                course.delete()
+                messages.success(request, "Course deleted successfully.")
+                return redirect('courses_home')  
+
             for key, value in request.POST.items():
                 if key.startswith('start_time_'):  
                     day_of_week = key.split('_')[2]  
@@ -160,18 +165,19 @@ def course_detail(request, course_id):
                     except Schedule.DoesNotExist:
                         pass
 
-        attendances_f = Attendance.objects.select_related('student').filter(course_id=course_id).values('student__email', 'student__first_name', 'student__last_name', 'date', 'status')
+        attendances_f = Attendance.objects.select_related('student').filter(course_id=course_id).values(
+            'student__email', 'student__first_name', 'student__last_name', 'date', 'status'
+        )
     
         attendances_list = list(attendances_f)
-        
         for attendance in attendances_list:
             attendance['date'] = attendance['date'].strftime('%Y-%m-%d')
 
         context = {
             'course': course,
             'attendances': attendances,
-            'schedules':schedules,
-            'attendances_data':attendances_list,
+            'schedules': schedules,
+            'attendances_data': attendances_list,
             'enrollments': enrollments,
         }
         return render(request, 'course_teacher.html', context)
