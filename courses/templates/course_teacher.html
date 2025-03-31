@@ -79,53 +79,52 @@
         <!-- Tab Contents -->
         <div>
             <div id="attendance-tab-content" class="tab-content hidden p-4 rounded-lg">
-                <form method="POST" action="{% url 'update_attendance' course.id %}">
-                    {% csrf_token %}
-                    <table class="w-full text-sm text-left text-gray-500 border-collapse border border-gray-300">
-                        <thead class="bg-gray-100 text-gray-700 uppercase">
-                            <tr>
-                                <th class="border border-gray-300 p-3">NO</th>
-                                <th class="border border-gray-300 p-3">Student</th>
-                                <th class="border border-gray-300 p-3">Time</th>
-                                <th class="border border-gray-300 p-3">Status</th>
+                <input type="hidden" id="course-id" value="{{ course.id }}">
+                <table class="w-full text-sm text-left text-gray-500 border-collapse border border-gray-300">
+                    <thead class="bg-gray-100 text-gray-700 uppercase">
+                        <tr>
+                            <th class="border border-gray-300 p-3">NO</th>
+                            <th class="border border-gray-300 p-3">Student</th>
+                            <th class="border border-gray-300 p-3">Time</th>
+                            <th class="border border-gray-300 p-3">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="attendance-table-body">
+                        {% for attendance in attendances %}
+                            <tr class="bg-white border-b" data-attendance-id="{{ attendance.id }}">
+                                <td class="border border-gray-300 p-3">{{ forloop.counter }}</td>
+                                <td class="border border-gray-300 p-3">{{ attendance.student.first_name }} {{ attendance.student.last_name }}</td>
+                                <td class="border border-gray-300 p-3">{{ attendance.time }}</td>
+                                <td class="border border-gray-300 p-3">
+                                    <select class="attendance-status p-2 border rounded" data-attendance-id="{{ attendance.id }}">
+                                        <option value="present" {% if attendance.status == "present" %}selected{% endif %}>Present</option>
+                                        <option value="absent" {% if attendance.status == "absent" %}selected{% endif %}>Absent</option>
+                                        <option value="leave" {% if attendance.status == "leave" %}selected{% endif %}>Leave</option>
+                                    </select>
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            {% for attendance in attendances %}
-                                <tr class="bg-white border-b">
-                                    <td class="border border-gray-300 p-3">{{ forloop.counter }}</td>
-                                    <td class="border border-gray-300 p-3">{{ attendance.student.first_name }} {{ attendance.student.last_name }}</td>
-                                    <td class="border border-gray-300 p-3">{{ attendance.time }}</td>
-                                    <td class="border border-gray-300 p-3">
-                                        <select name="status_{{ attendance.id }}" class="p-2 border rounded">
-                                            <option value="present" {% if attendance.status == "present" %}selected{% endif %}>Present</option>
-                                            <option value="absent" {% if attendance.status == "absent" %}selected{% endif %}>Absent</option>
-                                            <option value="leave" {% if attendance.status == "leave" %}selected{% endif %}>Leave</option>
-                                        </select>
-                                    </td>
-                                </tr>
-                            {% empty %}
-                                <tr>
-                                    <td colspan="4" class="text-center p-4 text-gray-500">No attendance records for today.</td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+                        {% empty %}
+                            <tr class="no-attendance">
+                                <td colspan="4" class="text-center p-4 text-gray-500">No attendance records for today.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
                 
-                    <button type="submit" class="mt-4 px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700">
-                        Save Changes
-                    </button>
-                </form>                
+                <div id="websocket-status" class="mt-4 text-sm text-gray-600">
+                    <span class="status-indicator inline-block w-3 h-3 rounded-full bg-gray-400 mr-2"></span>
+                    <span class="status-text">Connecting...</span>
+                </div>
             </div>
             <div id="setting-tab-content" class="tab-content hidden p-4 rounded-lg">
-                <div class="flex items-center py-1">
+                <!-- <div class="flex items-center py-1">
                     <label class="relative inline-flex items-center cursor-pointer">
                         <input type="checkbox" class="sr-only peer">
                         <div class="w-10 h-5 bg-gray-300 rounded-full peer peer-checked:bg-purple-600 transition-all duration-300"></div>
                         <div class="w-4 h-4 bg-white rounded-full absolute left-0.5 top-0.5 peer-checked:translate-x-5 transition-transform duration-300"></div>
                     </label>
                     <h4 class="px-5 text-gray-700">attendance by face</h4>
-                </div>
+                </div> -->
                 <form method="POST" class="py-4">
                     {% csrf_token %}
                     {% for schedule in schedules %}
@@ -578,4 +577,106 @@ document.getElementById('download-csv-btn').addEventListener('click', function(e
     
     window.location.href = `${downloadUrl}?start_date=${startDateInput}&end_date=${endDateInput}`;
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+    const courseId = document.getElementById('course-id').value;
+    const statusIndicator = document.querySelector('#websocket-status .status-indicator');
+    const statusText = document.querySelector('#websocket-status .status-text');
+    
+    const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+    const attendanceSocket = new WebSocket(
+        protocol + window.location.host + '/ws/attendance/' + courseId + '/'
+    );
+    
+    attendanceSocket.onopen = function(e) {
+        statusIndicator.classList.remove('bg-gray-400', 'bg-red-500');
+        statusIndicator.classList.add('bg-green-500');
+        statusText.textContent = 'Connected - Updates are live';
+    };
+    
+    attendanceSocket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        
+        if (data.type === 'new_attendance') {
+            const attendance = data.attendance;
+            
+            const noAttendanceRow = document.querySelector('.no-attendance');
+            if (noAttendanceRow) {
+                noAttendanceRow.remove();
+            }
+            
+            const tbody = document.getElementById('attendance-table-body');
+            const rowCount = tbody.querySelectorAll('tr').length + 1;
+            
+            const newRow = document.createElement('tr');
+            newRow.className = 'bg-white border-b';
+            newRow.setAttribute('data-attendance-id', attendance.id);
+            
+            newRow.innerHTML = `
+                <td class="border border-gray-300 p-3">${rowCount}</td>
+                <td class="border border-gray-300 p-3">${attendance.student_name}</td>
+                <td class="border border-gray-300 p-3">${attendance.time}</td>
+                <td class="border border-gray-300 p-3">
+                    <select class="attendance-status p-2 border rounded" data-attendance-id="${attendance.id}">
+                        <option value="present" ${attendance.status === 'present' ? 'selected' : ''}>Present</option>
+                        <option value="absent" ${attendance.status === 'absent' ? 'selected' : ''}>Absent</option>
+                        <option value="leave" ${attendance.status === 'leave' ? 'selected' : ''}>Leave</option>
+                    </select>
+                </td>
+            `;
+            
+            tbody.appendChild(newRow);
+            
+            newRow.classList.add('bg-green-100');
+            setTimeout(() => {
+                newRow.classList.remove('bg-green-100');
+                newRow.classList.add('transition-colors', 'duration-1000');
+            }, 2000);
+            
+            initStatusChangeEvent(newRow.querySelector('.attendance-status'));
+            
+        } else {
+            const attendanceId = data.attendance_id;
+            const status = data.status;
+            
+            const select = document.querySelector(`.attendance-status[data-attendance-id="${attendanceId}"]`);
+            if (select && select.value !== status) {
+                select.value = status;
+                
+                const row = document.querySelector(`tr[data-attendance-id="${attendanceId}"]`);
+                if (row) {
+                    row.classList.add('bg-yellow-100');
+                    setTimeout(() => {
+                        row.classList.remove('bg-yellow-100');
+                        row.classList.add('transition-colors', 'duration-500');
+                    }, 1000);
+                }
+            }
+        }
+    };
+    
+    attendanceSocket.onclose = function(e) {
+        console.error('Attendance socket closed unexpectedly');
+        statusIndicator.classList.remove('bg-gray-400', 'bg-green-500');
+        statusIndicator.classList.add('bg-red-500');
+        statusText.textContent = 'Disconnected - Please refresh the page';
+    };
+    
+    function initStatusChangeEvent(element) {
+        element.addEventListener('change', function() {
+            const attendanceId = this.getAttribute('data-attendance-id');
+            const status = this.value;
+            
+            attendanceSocket.send(JSON.stringify({
+                'attendance_id': attendanceId,
+                'status': status
+            }));
+        });
+    }
+    
+    document.querySelectorAll('.attendance-status').forEach(function(select) {
+        initStatusChangeEvent(select);
+    });
+});
+
 {% endblock %}

@@ -31,17 +31,3 @@ def download_attendance_csv(request, course_id):
         ])
     
     return response
-
-def update_attendance(request, course_id):
-    if request.method == 'POST':
-        for key, value in request.POST.items():
-            if key.startswith('status_'):
-                attendance_id = key.split('_')[1]
-                try:
-                    attendance = Attendance.objects.get(id=attendance_id)
-                    attendance.status = value
-                    attendance.save()
-                except Attendance.DoesNotExist:
-                    continue
-
-    return redirect('course_detail', course_id=course_id)

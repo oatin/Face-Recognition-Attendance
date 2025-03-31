@@ -35,6 +35,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    "daphne",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -48,6 +49,9 @@ INSTALLED_APPS = [
     "devices",
     "api",
     "admin_dashboard",
+    
+    'channels',
+
     "rest_framework",
     "rest_framework_simplejwt",
 
@@ -69,6 +73,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 
     "allauth.account.middleware.AccountMiddleware",
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = "dashboard.urls"
@@ -91,7 +96,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "dashboard.wsgi.application"
 
-
+ASGI_APPLICATION = 'dashboard.asgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
@@ -160,6 +165,9 @@ REST_FRAMEWORK = {
     ]
 }
 
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
@@ -199,3 +207,9 @@ LOGIN_URL = 'login'
 
 TEMP_DIR = os.path.join(MEDIA_ROOT, 'temp')
 os.makedirs(TEMP_DIR, exist_ok=True)
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
+}
