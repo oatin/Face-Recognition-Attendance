@@ -125,8 +125,6 @@ async def train_all_courses():
         await trainer.train_course_model(course_id)
 
 def setup_scheduler():
-    loader = DataLoader(base_url="http://app:8000")
-    loader.authenticate("a", "a")
     scheduler = BackgroundScheduler(timezone=tz_bangkok)
 
     last_hour = None
@@ -134,7 +132,9 @@ def setup_scheduler():
 
     def update_scheduler():
         nonlocal last_hour, last_minute 
-        try:
+        try:  
+            loader = DataLoader(base_url="http://app:8000")
+            loader.authenticate("a", "a")
             config = loader.api_client.make_request(loader.api_client.endpoints.config)
 
             if not config:

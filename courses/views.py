@@ -8,6 +8,7 @@ from .models import Course, Enrollment
 from attendance.models import Attendance, Schedule
 from members.models import Member
 from common.models import Room
+from django.db import models
 
 from datetime import date
 
@@ -194,21 +195,82 @@ def create_course_view(request):
             end_time = request.POST.get('end_time')
             room_id = request.POST.get('room')
             
-            room = Room.objects.get(id=room_id)
+            if not day_of_week:
+                return JsonResponse({
+                    'status': 'error',
+                    'errors': ['กรุณาเลือกอย่างน้อยหนึ่งวัน']
+                }, status=400)
             
-            course = Course.objects.create(
-                teacher=request.user,
-                course_code=course_code, course_name=course_name,
-                details=details, image=image
-            )
+            errors = []
             
-            for day in day_of_week:
-                Schedule.objects.create(
-                    course=course, day_of_week=day,
-                    start_time=start_time, end_time=end_time, room=room
-                )
+            if Course.objects.filter(course_code=course_code).exists():
+                errors.append("รหัสวิชานี้มีอยู่ในระบบแล้ว กรุณาใช้รหัสวิชาอื่น")
             
-            return redirect('courses_home')
+            if start_time >= end_time:
+                errors.append("เวลาเริ่มต้นต้องมาก่อนเวลาสิ้นสุด")
+                
+            try:
+                room = Room.objects.get(id=room_id)
+                
+                conflicting_days = []
+                for day in day_of_week:
+                    conflicting_schedules = Schedule.objects.filter(
+                        room=room,
+                        day_of_week=day
+                    ).exclude(
+                        models.Q(end_time__lte=start_time) | models.Q(start_time__gte=end_time)
+                    )
+                    
+                    if conflicting_schedules.exists():
+                        conflicting_course = conflicting_schedules.first().course
+                        conflicting_days.append(f"วัน{day} (ชนกับวิชา {conflicting_course.course_code})")
+                
+                if conflicting_days:
+                    errors.append(f"ห้อง {room.building} - {room.name} มีตารางเรียนชนกันใน: {', '.join(conflicting_days)}")
+                
+                if not errors:
+                    course = Course.objects.create(
+                        teacher=request.user,
+                        course_code=course_code, 
+                        course_name=course_name,
+                        details=details, 
+                        image=image
+                    )
+                    
+                    for day in day_of_week:
+                        Schedule.objects.create(
+                            course=course, 
+                            day_of_week=day,
+                            start_time=start_time, 
+                            end_time=end_time, 
+                            room=room
+                        )
+                    
+                    return JsonResponse({
+                        'status': 'success', 
+                        'message': f"สร้างรายวิชา '{course_name}' สำเร็จ"
+                    })
+                else:
+                    return JsonResponse({
+                        'status': 'error', 
+                        'errors': errors
+                    }, status=400)
+                    
+            except Room.DoesNotExist:
+                return JsonResponse({
+                    'status': 'error', 
+                    'errors': ['ไม่พบห้องที่เลือก กรุณาลองใหม่อีกครั้ง']
+                }, status=400)
+            except Exception as e:
+                return JsonResponse({
+                    'status': 'error', 
+                    'errors': [f'เกิดข้อผิดพลาด: {str(e)}']
+                }, status=500)
+        else:
+            return JsonResponse({
+                'status': 'error', 
+                'errors': ["คุณไม่มีสิทธิ์ในการสร้างรายวิชา"]
+            }, status=403)
 
 @login_required
 def courses_home(request):

@@ -197,4 +197,83 @@ document.getElementById('create_course').addEventListener('click', () => {
 document.getElementById('cancel_modal').addEventListener('click', () => {
     document.getElementById('course_modal').classList.add('hidden');
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+    const courseForm = document.getElementById('course_form');
+    
+    // สร้าง container สำหรับแสดงข้อผิดพลาด
+    const errorContainer = document.createElement('div');
+    errorContainer.className = 'bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4 hidden';
+    errorContainer.id = 'error_container';
+    
+    // เพิ่ม error container ไว้ก่อนฟอร์ม (หลังจาก h2 title)
+    const modalTitle = document.querySelector('#course_modal h2');
+    modalTitle.parentNode.insertBefore(errorContainer, modalTitle.nextSibling);
+    
+    // สร้าง container สำหรับแสดงข้อความสำเร็จ
+    const successContainer = document.createElement('div');
+    successContainer.className = 'bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4 hidden';
+    successContainer.id = 'success_container';
+    modalTitle.parentNode.insertBefore(successContainer, modalTitle.nextSibling);
+    
+    // เพิ่ม event listener สำหรับการส่งฟอร์ม
+    courseForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // ซ่อนข้อความแจ้งเตือนที่อาจแสดงอยู่ก่อนหน้า
+        errorContainer.classList.add('hidden');
+        errorContainer.innerHTML = '';
+        successContainer.classList.add('hidden');
+        successContainer.innerHTML = '';
+        
+        // สร้าง FormData จากฟอร์ม
+        const formData = new FormData(courseForm);
+        
+        // ส่งข้อมูลด้วย fetch API
+        fetch(courseForm.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+            // ไม่ต้องกำหนด Content-Type เพราะ FormData จะกำหนดให้อัตโนมัติ
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                // แสดงข้อความสำเร็จ
+                successContainer.textContent = data.message;
+                successContainer.classList.remove('hidden');
+                
+                // รีเซ็ตฟอร์ม
+                courseForm.reset();
+                
+                // รอสักครู่แล้วปิด modal และรีโหลดหน้า
+                setTimeout(() => {
+                    document.getElementById('course_modal').classList.add('hidden');
+                    window.location.reload();
+                }, 1500);
+            } else {
+                // แสดงข้อผิดพลาด
+                errorContainer.classList.remove('hidden');
+                
+                const errorList = document.createElement('ul');
+                errorList.className = 'list-disc pl-5';
+                
+                data.errors.forEach(error => {
+                    const errorItem = document.createElement('li');
+                    errorItem.textContent = error;
+                    errorList.appendChild(errorItem);
+                });
+                
+                errorContainer.appendChild(errorList);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            errorContainer.classList.remove('hidden');
+            errorContainer.textContent = 'เกิดข้อผิดพลาดที่ไม่คาดคิด กรุณาลองใหม่อีกครั้ง';
+        });
+    });
+});
 {% endblock %}
