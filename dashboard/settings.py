@@ -213,3 +213,6 @@ CHANNEL_LAYERS = {
         "BACKEND": "channels.layers.InMemoryChannelLayer"
     }
 }
+
+TIME_ZONE = 'Asia/Bangkok'
+USE_TZ = True

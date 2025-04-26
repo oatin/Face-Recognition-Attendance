@@ -10,7 +10,6 @@ from .models import Member, Report
 from attendance.models import Attendance, Schedule
 from courses.models import Course, Enrollment
 from devices.models import TrainingImage, Device
-from common.models import Room
 from common.utils import predFacePose
 from django.utils.timezone import now
 from .forms import ReportForm
